@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# By Zwielicht 2025
+# By Zwielichtig 2025
 
 # Ensure script is run with the correct privileges
   if [ "$(id -u)" -ne 0 ]; then

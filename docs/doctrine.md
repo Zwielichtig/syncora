@@ -16,3 +16,5 @@ Update database structure with lastest migration
 ```bash
 php bin/console doctrine:migration:migrate
 ```
+---
+For further information check the official [documentation](symfony.com/doc/current/doctrine.html) by Symfony.

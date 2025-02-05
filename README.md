@@ -5,9 +5,18 @@ an open-source web-organizer project
 > This project is NOT in active development!
 
 ## System-Setup *(built for APT package manager)*
+> [!IMPORTANT]
+> This script will give you the tools needed to set up a DDEV environment, if you already got a functioning DDEV system running you can skip this part
 ```bash
-curl
+wget -O ~/systemInstall.sh https://raw.githubusercontent.com/Zwielichtig/syncora/refs/heads/master/extras/systemInstall.sh
 ```
+```bash
+chmod +x ~/systemInstall.sh
+```
+```bash
+sudo ./systemInstall.sh
+```
+
 
 ## Environment-Setup
 Start Syncora
@@ -35,7 +44,12 @@ ddev build
 
 ## Dev-Tools
 
-[Doctrine usage](/docs/doctrine.md)
+Start Watcher
+```bash
+ddev watch
+```
+___
+- [Doctrine usage](/docs/doctrine.md)
 
 
 
