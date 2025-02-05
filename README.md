@@ -1,14 +1,42 @@
-# syncora
-Web-Organizer in Progress
+# Syncora
+an open-source web-organizer project
 
+> [!WARNING]  
+> This project is NOT in active development!
 
+## System-Setup *(built for APT package manager)*
+```bash
+curl
+```
 
-## Doctrine Commands
-php bin/console make:entity - Creates an Entity Class and a corresponding Repository Class.
+## Environment-Setup
+Start Syncora
+```bash
+ddev start
+```
+<br>
 
-php bin/console make:migration - Creates a migration file that contains SQL statements to update the structure of the database
+Install packages and dependencies
+```bash
+ddev composer install
+```
+<br>
 
-php bin/console doctrine:migration:migrate - Executes the migration commands and creates/updates the database structure.
+Import database
+```bash
+ddev import-db -f extras/dump.sql.gz
+```
+<br>
+
+Build assets
+```bash
+ddev build
+```
+
+## Dev-Tools
+
+[Doctrine usage](/docs/doctrine.md)
+
 
 
 
