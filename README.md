@@ -7,7 +7,7 @@ an open-source web-organizer project
 
 ## System-Setup *(built for APT package manager)*
 > [!IMPORTANT]
-> This script will give you the tools needed to set up a DDEV environment, if you already got a functioning DDEV system running you can skip this part
+> This script will give you the tools needed to set up a DDEV environment, if you already have a functioning DDEV system running you can skip this part
 ```bash
 wget -O ~/systemInstall.sh https://raw.githubusercontent.com/Zwielichtig/syncora/refs/heads/master/extras/systemInstall.sh
 ```
