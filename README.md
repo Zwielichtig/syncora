@@ -3,6 +3,7 @@ an open-source web-organizer project
 
 > [!WARNING]  
 > This project is NOT in active development!
+<br>
 
 ## System-Setup *(built for APT package manager)*
 > [!IMPORTANT]
@@ -17,6 +18,7 @@ chmod +x ~/systemInstall.sh
 sudo ./systemInstall.sh
 ```
 
+<br>
 
 ## Environment-Setup for local development
 Start Syncora
