@@ -18,7 +18,7 @@ sudo ./systemInstall.sh
 ```
 
 
-## Environment-Setup
+## Environment-Setup for local development
 Start Syncora
 ```bash
 ddev start
