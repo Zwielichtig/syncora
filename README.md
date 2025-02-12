@@ -27,9 +27,15 @@ ddev start
 ```
 <br>
 
-Install packages and dependencies
+Install Composer packages and dependencies
 ```bash
 ddev composer install
+```
+<br>
+
+Install Node packages and dependencies
+```bash
+ddev npm i
 ```
 <br>
 
