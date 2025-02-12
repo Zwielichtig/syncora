@@ -10,7 +10,6 @@ class BoardController extends BaseController
     #[Route('/', name: 'homepage')]
     public function showHome(): Response
     {
-        dd($this->request);
         return $this->render('/board.html.twig');
     }
 }
