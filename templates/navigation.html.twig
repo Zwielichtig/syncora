@@ -1,4 +1,4 @@
-<!-- Example Bootstrap navbar with gradient background -->
+
 <nav
   class="navbar navbar-expand-lg navbar-light"
   style="
@@ -7,25 +7,26 @@
     border-radius: 3px;
   "
 >
-  <div class="container-fluid" style="padding-left: 0; padding-right: 0;">
+  <div class="container-fluid p-0">
     <!-- Left side navigation items -->
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row">
-      <li class="nav-item me-2">
-        <a class="nav-link" href="#">
-          <i class="bi bi-calendar4-week"></i>
+    <ul class="navbar-nav me-auto d-flex flex-row mb-2 mb-lg-0">
+      <!-- Each item except the last has a right border -->
+      <li class="nav-item border-end border-2 border-secondary px-3">
+        <a class="nav-link" href="/calendar">
+          <i class="fa-regular fa-calendar-days"></i>
         </a>
       </li>
-      <li class="nav-item me-2">
-        <a class="nav-link" href="#">
-          <i class="bi bi-grid"></i>
+      <li class="nav-item border-end border-2 border-secondary px-3">
+        <a class="nav-link" href="/">
+          <i class="fa-solid fa-thumbtack"></i>
         </a>
       </li>
-      <li class="nav-item me-2">
+      <li class="nav-item border-end border-2 border-secondary px-3">
         <a class="nav-link" href="#">
           Neue Notiz +
         </a>
       </li>
-      <li class="nav-item me-2">
+      <li class="nav-item px-3">
         <a class="nav-link" href="#">
           Kategorien
         </a>
@@ -33,23 +34,22 @@
     </ul>
 
     <!-- Right side navigation items -->
-    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row">
-      <li class="nav-item me-2">
+    <ul class="navbar-nav ms-auto d-flex flex-row mb-2 mb-lg-0">
+      <li class="nav-item border-end border-2 border-secondary px-3">
         <a class="nav-link" href="#">
-          <i class="bi bi-share"></i>
+          <i class="fa-solid fa-share-nodes"></i>
         </a>
       </li>
-      <li class="nav-item me-2">
+      <li class="nav-item border-end border-2 border-secondary px-3">
         <a class="nav-link" href="#">
-          <i class="bi bi-gear"></i>
+          <i class="fa-solid fa-gear"></i>
         </a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item px-3">
         <a class="nav-link" href="#">
-          <i class="bi bi-person-circle"></i>
+          <i class="fa-solid fa-user"></i>
         </a>
       </li>
     </ul>
   </div>
 </nav>
-

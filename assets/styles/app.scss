@@ -5,47 +5,4 @@
 @use '~@fortawesome/fontawesome-free/scss/solid';
 @use '~@fortawesome/fontawesome-free/scss/brands';
 
-.container-fluid {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-  
-  .nav-bar {
-    display: flex;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(to right, #d1c1e4, #84CEEB);
-  
-    // Explicitly setting all corners, though you could just use `border-radius: 3px;`
-    border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-  
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 15px;   
-      border-right: 2px solid #8860D0;
-      cursor: pointer;
-  
-      &:hover {
-        background-color: #d9d8ff;
-      }
-  
-      &:last-child {
-        border-right: none;
-      }
-    }
-  
-    // The ".ml-auto" container: 
-    // Place a left border on the first item within this container.
-    .ml-auto {
-      .nav-item {
-        &:first-child {
-          border-left: 2px solid #8860D0;
-        }
-      }
-    }
-  }
+@use 'components/navigation';
