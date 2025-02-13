@@ -5,11 +5,11 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class CalenderController extends BaseController
+class CalendarController extends BaseController
 {
-    #[Route('/', name: 'calender')]
+    #[Route('/calendar', name: 'calendar')]
     public function showCalender(): Response
     {
-        return $this->render('/syncora/calendar');
+        return $this->render('/calendar.html.twig');
     }
 }
