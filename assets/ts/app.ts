@@ -2,6 +2,10 @@
 import '../styles/app.scss';
 import 'bootstrap';
 import { controllerMapper } from './controllerMapper';
+import '../styles/pinboard.scss';
+import { PinController } from './controller/PinController';
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.body.dataset.pageType;

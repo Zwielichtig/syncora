@@ -1,0 +1,30 @@
+.pin {
+    width: 250px;
+    border: 1px solid black;
+    font-family: Arial, sans-serif;
+    
+    .header {
+        display: flex;
+        align-items: center;
+        background-color: #F4F4F4;
+        padding: 5px;
+        font-weight: bold;
+        border-bottom: 1px solid black;
+
+        .icon {
+            width: 12px;
+            height: 12px;
+            background-color: orange;
+            margin-right: 5px;
+        }
+    }
+
+    .content {
+        padding: 10px;
+        font-size: 14px;
+
+        p {
+            margin: 5px 0;
+        }
+    }
+}
