@@ -23,7 +23,7 @@ export class CalendarController {
                 end: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             timeZone: 'UTC',
-            height: 650,
+            height: 750,
         });
 
         calendar.render();
