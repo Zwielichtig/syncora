@@ -1,6 +1,15 @@
-<nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(to right, #d1c1e4, #84CEEB); border: 2px solid #8860D0; border-radius: 3px;">
+<nav
+  class="navbar navbar-expand-lg navbar-light"
+  style="
+    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+    border: 2px solid #8860D0;
+    border-radius: 3px;
+  "
+>
   <div class="container-fluid p-0">
+    <!-- Left side navigation items -->
     <ul class="navbar-nav me-auto d-flex flex-row mb-2 mb-lg-0">
+      <!-- Each item except the last has a right border -->
       <li class="nav-item border-end border-2 border-secondary px-3">
         <a class="nav-link" href="/calendar">
           <i class="fa-regular fa-calendar-days"></i>
@@ -27,6 +36,8 @@
         </a>
       </li>
     </ul>
+
+    <!-- Right side navigation items -->
     <ul class="navbar-nav ms-auto d-flex flex-row mb-2 mb-lg-0">
       <li class="nav-item border-end border-2 border-secondary px-3">
         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#sharecategoriesModal">
@@ -47,12 +58,13 @@
   </div>
 </nav>
 
-<div class="modal fade" id="categoriesModal" tabindex="-1">
+
+
+<div class="modal" id="categoriesModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="categoriesModalLabel">Kategorie erstellen</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Kategorie erstellen</h5>
       </div>
       <div class="modal-body">
         <input type="text" class="form-control" placeholder="Kategorie Name">
