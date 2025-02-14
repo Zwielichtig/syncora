@@ -19,21 +19,21 @@ export class ToDoPin extends Pin {
         return null;
     }
 
-    public static initToDoPinInstance(data: {'id':number, 'type':number, 'category': number, 'title':string, 'entries':Array<Object>}) : ToDoPin {
+    public static initToDoPinInstance(data: any) : ToDoPin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
         const entries = []
         for (const entry of data.entries) {
             entries.push(ToDoEntry.initToDoEntryInstance(data.entries))
         }
-        const pin = new ToDoPin(data.id, type, category, data.title, entries)
+        const pin = new ToDoPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, entries)
         this.instances.push(pin)
         return pin
     }
 
 
-    constructor(id: number, type: PinType, category: Category, title: string, entries: ToDoEntry[]) {
-        super(id, type, category, title)
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, entries: ToDoEntry[]) {
+        super(id, type, category, title, posX, posY, width, height)
         this.entries = entries
     }
 

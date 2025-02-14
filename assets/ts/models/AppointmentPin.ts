@@ -16,17 +16,17 @@ export class AppointmentPin extends Pin {
         return null;
     }
 
-    public static initImagePinInstance(data: {'id':number, 'type':number, 'category': number, 'title':string, 'datetime': string}) : AppointmentPin {
+    public static initImagePinInstance(data: any) : AppointmentPin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
         const datetime = new Date(data.datetime)
-        const pin = new AppointmentPin(data.id, type, category, data.title, datetime)
+        const pin = new AppointmentPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, datetime)
         this.instances.push(pin)
         return pin
     }
 
-    constructor(id: number, type: PinType, category: Category, title: string, datetime: Date) {
-        super(id, type, category, title)
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, datetime: Date) {
+        super(id, type, category, title, posX, posY, width, height)
         this.datetime = datetime
     }
 

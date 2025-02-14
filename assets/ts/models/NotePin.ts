@@ -17,22 +17,27 @@ export class NotePin extends Pin{
         return null;
     }
 
-    public static initNotePinInstance(data: {'id':number, 'type':number, 'category': number, 'title':string, 'content': string}) : NotePin {
+    public static initNotePinInstance(data: any) : NotePin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const pin = new NotePin(data.id, type, category, data.title, data.content)
+        const pin = new NotePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.content)
         this.instances.push(pin)
         return pin
     }
     
 
-    constructor(id: number, type: PinType, category: Category, title: string, content: string) {
-        super(id, type, category, title)
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, content: string) {
+        super(id, type, category, title, posX, posY, width, height)
+        this.content = content
     }
 
 
     buildPinContent(): HTMLDivElement {
-        throw new Error("Method not implemented.");
+        const pinContent = document.createElement('div')
+        const text = document.createElement('p')
+        text.innerHTML = this.content
+        pinContent.appendChild(text)
+        return pinContent
     }
     savePin(): void {
         throw new Error("Method not implemented.");

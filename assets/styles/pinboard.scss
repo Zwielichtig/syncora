@@ -2,6 +2,8 @@
     width: 250px;
     border: 1px solid black;
     font-family: Arial, sans-serif;
+    resize: both;
+    overflow: auto;
     
     .header {
         display: flex;
@@ -10,11 +12,11 @@
         padding: 5px;
         font-weight: bold;
         border-bottom: 1px solid black;
+        cursor: grab; 
 
         .icon {
             width: 12px;
             height: 12px;
-            background-color: orange;
             margin-right: 5px;
         }
     }

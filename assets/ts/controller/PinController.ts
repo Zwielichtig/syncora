@@ -7,6 +7,11 @@ export class PinController {
     private static pins : Pin[]
     private static pinTypes : PinType[]
 
+    /**
+     * entry
+     */
+    public init() {}
+
     public static loadPins() {
         //AJAX
     }

@@ -4,6 +4,17 @@ import 'bootstrap';
 import { controllerMapper } from './controllerMapper';
 import '../styles/pinboard.scss';
 import { PinController } from './controller/PinController';
+import { Category } from './models/Category';
+import { NotePin } from './models/NotePin';
+import { PinType } from './models/PinType';
+
+
+const pinType = new PinType(1, 'Notiz')
+const category = new Category(1, 'Test Kategore', '#0097A7')
+
+const pin = new NotePin(1, pinType, category, 'Test Notiz', 300, 300, 300, 200, 'Hallo, dies ist ein Test.')
+pin.buildPin()
+
 
 
 

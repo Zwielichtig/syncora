@@ -17,16 +17,16 @@ export class ImagePin extends Pin{
         return null;
     }
 
-    public static initImagePinInstance(data: {'id':number, 'type':number, 'category': number, 'title':string, 'image_path': string}) : ImagePin {
+    public static initImagePinInstance(data: any) : ImagePin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const pin = new ImagePin(data.id, type, category, data.title, data.image_path)
+        const pin = new ImagePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.image_path)
         this.instances.push(pin)
         return pin
     }
 
-    private constructor(id: number, type: PinType, category: Category, title: string, imagePath: string) {
-        super(id, type, category, title)
+    private constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, imagePath: string) {
+        super(id, type, category, title, posX, posY, width, height)
         this.imagePath = imagePath
     }
 
