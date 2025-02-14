@@ -1,5 +1,6 @@
 // TypeScript entry point
 import '../styles/app.scss';
+import 'bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
     const calendarEl = document.getElementById('calendar-holder');
