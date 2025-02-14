@@ -12,8 +12,8 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
-    <body>
-        {{ include('navigation.html.twig') }} 
+    <body data-page-type="{% block pageType %}{% endblock %}">
+        {{ include('navigation.html.twig') }}
         {% block body %}{% endblock %}
     </body>
 </html>

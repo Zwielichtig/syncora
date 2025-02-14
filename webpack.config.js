@@ -55,6 +55,11 @@ Encore
 
     .enableSassLoader()
 
+    // Add this line to enable dynamic imports
+    .configureBabel((config) => {
+        config.plugins.push('@babel/plugin-syntax-dynamic-import');
+    })
+
     ;
 const webpackConfig = Encore.getWebpackConfig();
 
