@@ -1,6 +1,7 @@
 .container-fluid {
     padding-left: 0 !important;
     padding-right: 0 !important;
+    padding-bottom: 1em;
   }
 
   .nav-bar, .navbar {
@@ -12,6 +13,10 @@
     background: linear-gradient(to right, #d1c1e4, #84CEEB);
     border: 2px solid #8860D0;
     border-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
 
     .nav-item {
       position: relative;
