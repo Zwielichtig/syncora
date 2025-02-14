@@ -54,3 +54,75 @@
         }
   }
   
+  // FullCalendar Table Styling
+.fc {
+    background: white !important; // Matches button gradient
+    border-radius: 10px; // Rounded edges for a soft look
+    padding: 10px;
+  }
+  
+  // Header Row (Days of the Week)
+  .fc-scrollgrid-section-header th {
+    background: white !important; // Subtle gradient
+    color: white !important;
+    border-bottom: 2px solid #8860D0 !important; // Adds a purple divider line
+    text-align: center;
+    font-size: 16px;
+    font-weight: lighter;
+  }
+  
+  // Calendar Cells (Days)
+  .fc-daygrid-day {
+    background: white !important;
+    border: 1px solid rgba(136, 96, 208, 0.2) !important;
+    transition: background 0.4s ease-in-out, transform 0.2s ease-in-out;
+    position: relative;
+  }
+  
+  // Hover Effect on Cells
+  .fc-daygrid-day:hover {
+    background: rgba(136, 96, 208, 0.3) !important; // Light purple tint on hover
+    transform: scale(1.01);
+    box-shadow: 0 0 8px rgba(136, 96, 208, 0.5);
+  }
+
+  // **STOP CELL HOVER IF EVENT EXISTS**
+    .fc-daygrid-day:has(.fc-event) {
+    background: white !important; // Prevents the hover color
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  // Today's Date Highlight
+  .fc-day-today {
+    background: rgba(132, 206, 235, 0.3) !important; // Light blue highlight
+    border: 2px solid #5ea5d6 !important; // Slightly darker blue border
+    font-weight: bold;
+  }
+  
+  // Selected Day Effect
+  .fc-day-selected {
+    background: linear-gradient(to right, #a78cc6, #5ea5d6) !important; // Gradient effect on selected day
+    border: 2px solid #5a3680 !important;
+    box-shadow: 0 0 12px rgba(112, 72, 164, 0.6);
+  }
+  
+  // Event Styling
+  .fc-event {
+    background: linear-gradient(to right, #ff6f61, #ffb88c) !important; // Soft red-orange for contrast
+    color: white !important;
+    border-radius: 5px;
+    border: none;
+    padding: 5px;
+  }
+  
+  // Event Hover Effect
+  .fc-event:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 111, 97, 0.6);
+    background: linear-gradient(to right, #e55d4a, #ff9c75) !important; // Slightly darker on hover
+  }
+
+  .fc-daygrid-day .fc-event {
+    pointer-events: auto !important;
+  }

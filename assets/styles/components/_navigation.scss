@@ -1,10 +1,53 @@
 
-.container-fluid {
+  .container-fluid {
     padding-left: 0 !important;
     padding-right: 0 !important;
     padding-bottom: 1em;
   }
   
+  .fc-button {
+    background: transparent !important; // Makes button fully transparent
+    color: white !important; // Keeps text visible
+    border: 2px solid rgba(136, 96, 208, 0.6) !important; // Adds a soft border
+    border-radius: 8px !important; // Rounded edges
+    padding: 10px 20px !important;
+    transition: all 0.4s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  
+    // Elegant glow effect on hover
+    &:hover {
+      background: rgba(136, 96, 208, 0.2) !important; // Slight background visibility on hover
+      border-color: #7048a4 !important; // Darker purple border
+      transform: scale(1.1); // Slight zoom effect
+      box-shadow: 0 0 12px rgba(136, 96, 208, 0.6), 0 0 18px rgba(132, 206, 235, 0.4); // Soft glow effect
+    }
+  
+    // Subtle click effect
+    &:active {
+      background: rgba(112, 72, 164, 0.3) !important; // Slightly darker on click
+      border-color: #5a3680 !important; // Even darker border when clicked
+      box-shadow: 0 0 10px rgba(112, 72, 164, 0.8); // Glow when clicked
+      transform: scale(1.05);
+    }
+  
+    // Cool animated light reflection effect
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      transition: left 0.4s ease-in-out;
+    }
+  
+    &:hover::after {
+      left: 100%;
+    }
+  }
+
   .nav-bar {
     display: flex;
     width: 100%;
