@@ -2,17 +2,28 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends BaseController
 {
-    #[Route('/login/send')]
-    public function login(Request $request): Response
+    #[Route('/register/send')]
+    public function register(EntityManagerInterface $entityManager)
     {
-        $fieldnames = $request->request->all();
-        $user = $this->databaseService->getUser($fieldnames['username'], $fieldnames['password'])[0];
+        $fieldnames = $this->request->request->all();
+        $userRepository = $entityManager->getRepository(User::class);
+    }
+
+    #[Route('/login/send')]
+    public function login(EntityManagerInterface $entityManager): Response
+    {
+        $fieldnames = $this->request->request->all();
+        $userRepository = $entityManager->getRepository(User::class);
+        $user = $userRepository->getUser()->findOneBy(['username' => $fieldnames['username'], 'password' => $fieldnames['password']]);
 
         if ($user) {
             $_SESSION['loggedIn'] = true;

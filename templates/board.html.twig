@@ -4,6 +4,91 @@
 {% block pageType %}homepage{% endblock %}
 
 {% block body %}
-    <h1>Board</h1>
-    <p>It is awesome!</p>
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container">
+    <div class="card shadow-lg auth-card" style="max-width: 400px; width: 90%;">
+        <div class="card-body p-4">
+            <ul class="nav nav-pills mb-4" id="authTabs" role="tablist">
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link active w-100" data-bs-toggle="pill" data-bs-target="#login-tab" type="button">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100" data-bs-toggle="pill" data-bs-target="#register-tab" type="button">
+                        <i class="fas fa-user-plus me-2"></i>Register
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="authTabContent">
+                <!-- Login Tab -->
+                <div class="tab-pane fade show active" id="login-tab">
+                    <form>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 0">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 1">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" placeholder="Password">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+
+                <!-- Register Tab -->
+                <div class="tab-pane fade" id="register-tab">
+                    <form>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 0">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" placeholder="Username">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 1">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 2">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 3">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" placeholder="Confirm Password">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabList = document.querySelector('#authTabs');
+    const tabs = document.querySelectorAll('[data-bs-toggle="pill"]');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', (e) => {
+            const targetId = e.target.getAttribute('data-bs-target');
+            tabList.setAttribute('data-active-tab',
+                targetId === '#register-tab' ? 'register' : 'login'
+            );
+        });
+    });
+});
+</script>
 {% endblock %}
+
