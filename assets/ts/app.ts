@@ -1,33 +1,14 @@
 // TypeScript entry point
 import '../styles/app.scss';
 import 'bootstrap';
+import { controllerMapper } from './controllerMapper';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const calendarEl = document.getElementById('calendar-holder');
+    const page = document.body.dataset.pageType;
+    const ControllerClass = controllerMapper[page];
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        defaultView: 'dayGridMonth',
-        editable: true,
-        eventSources: [
-            {
-                url: '/fc-load-events',
-                method: 'POST',
-                extraParams: {
-                    filters: JSON.stringify({})
-                },
-                failure: () => {
-                    // alert('There was an error while fetching FullCalendar!');
-                },
-            },
-        ],
-        headerToolbar: {
-            start: 'prev,next today',
-            center: 'title',
-            end: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        timeZone: 'UTC',
-        height: 650,
-    });
-
-    calendar.render();
+    if (ControllerClass) {
+        const controller = new ControllerClass();
+        controller.init();
+    }
 });
