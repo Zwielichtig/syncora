@@ -32,7 +32,7 @@
         </div>
       </li>
       <li class="nav-item px-3">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#categoriesModal">
           Kategorien
         </a>
       </li>
@@ -58,3 +58,22 @@
     </ul>
   </div>
 </nav>
+
+
+
+<div class="modal" id="categoriesModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kategorie erstellen</h5>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" placeholder="Kategorie Name">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Erstellen</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+</div>
