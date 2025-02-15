@@ -3,7 +3,7 @@ export class Category {
     name: string
     color: string
 
-    public static instances: Category[]
+    public static instances: Category[] = []
 
 
     public static getCategoryInstance(id: number): Category {
@@ -25,5 +25,7 @@ export class Category {
         this.id = id
         this.name = name
         this.color = color
+
+        Category.instances.push(this)
     }  
 }

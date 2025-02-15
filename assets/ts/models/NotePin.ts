@@ -1,3 +1,4 @@
+import { HTMLSnippets } from "../ressources/HTMLSnippets";
 import { Category } from "./Category";
 import { Pin } from "./Pin";
 import { PinType } from "./PinType";
@@ -6,6 +7,8 @@ export class NotePin extends Pin{
     content: string
 
     public static instances: NotePin[]
+
+    contentArea : HTMLParagraphElement
     
     
     public static getNotePinInstance(id: number): NotePin {
@@ -33,14 +36,37 @@ export class NotePin extends Pin{
 
 
     buildPinContent(): HTMLDivElement {
-        const pinContent = document.createElement('div')
-        const text = document.createElement('p')
-        text.innerHTML = this.content
-        pinContent.appendChild(text)
-        return pinContent
+        const parser = new DOMParser()
+        const htmlNoteContent = parser.parseFromString(HTMLSnippets.NOTE_CONTENT, 'text/html')
+        const noteContainer = htmlNoteContent.querySelector('.note') as HTMLDivElement
+        this.contentArea =  noteContainer.querySelector('.note-content')
+        this.contentArea.innerHTML = this.content
+
+        return noteContainer
     }
+
+    buildEditorContent(): HTMLDivElement {
+        const parser = new DOMParser()
+        const html = parser.parseFromString(HTMLSnippets.NOTE_CONTENT_EDITOR, 'text/html')
+        const noteEditor = html.querySelector('.note-editor') as HTMLDivElement
+
+        const contentTextarea = noteEditor.querySelector('.note-content-input') as HTMLTextAreaElement
+        contentTextarea.innerHTML = this.content
+        contentTextarea.addEventListener('change', e => {
+            this.onContentChange(e)
+        })
+
+        console.log(noteEditor)
+        return noteEditor
+    }
+
     savePin(): void {
         throw new Error("Method not implemented.");
+    }
+
+    private onContentChange(event:Event) {
+        this.content = (event.target as HTMLTextAreaElement).value
+        this.contentArea.innerHTML = this.content
     }
 
 }

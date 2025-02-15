@@ -1,3 +1,4 @@
+import { HTMLSnippets } from "../ressources/HTMLSnippets";
 import { Category } from "./Category";
 import { Pin } from "./Pin";
 import { PinType } from "./PinType";
@@ -38,8 +39,22 @@ export class ToDoPin extends Pin {
     }
 
     buildPinContent(): HTMLDivElement {
-        throw new Error("Method not implemented.");
+        const pinContent = document.createElement('div')
+        const parser = new DOMParser();
+        for (const entry of this.entries) {
+            this.pinContainer.appendChild(entry.buildEntry())
+        }
+        return pinContent;
     }
+
+    buildEditorContent(): HTMLDivElement {
+        const editorContent = document.createElement('div')
+        for (const entry of this.entries) {
+            editorContent.appendChild(entry.buildEntryEditor())
+        }
+        return editorContent;
+    }
+
     savePin(): void {
         throw new Error("Method not implemented.");
     }

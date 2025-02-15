@@ -1,3 +1,5 @@
+import { AjaxController } from "../controller/AjaxController"
+import { HTMLSnippets } from "../ressources/HTMLSnippets"
 import { Category } from "./Category"
 import { PinType } from "./PinType"
 
@@ -15,8 +17,11 @@ export abstract class Pin {
     dragX: number
     dragY: number
 
-
     pinContainer : HTMLDivElement
+    editorModal: HTMLDivElement
+
+    titleSpan : HTMLSpanElement
+    categoryIcon: HTMLDivElement
 
     constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number) {
         this.id = id
@@ -31,44 +36,98 @@ export abstract class Pin {
         this.isDragging = false
     }
 
-    public buildPin() {
-        this.pinContainer = document.createElement('div');
-        this.pinContainer.classList.add('pin')
-        const header = document.createElement('div');
-        header.classList.add('header')
-        const categoryIcon = document.createElement('div');
-        categoryIcon.classList.add('icon')
-        categoryIcon.style.backgroundColor = this.category.color;
-        const titel = document.createElement('span');
-        titel.innerHTML = this.title;
+    public  async buildPin() { 
+        this.buildEditorModal()
+        console.log(this.title)
 
-        header.appendChild(categoryIcon);
-        header.appendChild(titel);
+        const parser = new DOMParser();
+        const html = parser.parseFromString(HTMLSnippets.PIN, 'text/html')
+        this.pinContainer = html.querySelector('.pin')
+        this.pinContainer.id = 'pin'+this.id
 
-        this.pinContainer.appendChild(header);
-        this.pinContainer.appendChild(this.buildPinContent());
-
-        this.pinContainer.style.position = "absolute";
-        this.pinContainer.style.left = `${this.posX}px`;
-        this.pinContainer.style.top = `${this.posY}px`;
-        this.pinContainer.style.width = `${this.width}px`;
-        this.pinContainer.style.height = `${this.height}px`;
-
+        //pin title
+        this.titleSpan = this.pinContainer.querySelector('.pin-title')
+        this.titleSpan.innerHTML = this.title
         
-        header.addEventListener('mousedown', event => {
+        //category icon
+        this.categoryIcon = this.pinContainer.querySelector('.category-icon')
+        this.categoryIcon.style.backgroundColor = this.category.color
+
+        //edit icon
+        const editIcon = this.pinContainer.querySelector('.edit-icon')
+        editIcon.setAttribute('data-bs-target', `#${this.editorModal.id}`)
+
+        //pin header
+        const pinHeader = this.pinContainer.querySelector('.pin-header')
+        pinHeader.addEventListener('mousedown', event => {
 
             this.isDragging = true;
-            this.dragX = event.clientX - this.posX;
-            this.dragY = event.clientY - this.posY;
+            this.dragX = (event as MouseEvent).clientX - this.posX;
+            this.dragY =  (event as MouseEvent).clientY - this.posY;
             
             document.body.addEventListener('mousemove', this.drag.bind(this))
             document.body.addEventListener('mouseup', this.stopDrag.bind(this))
             document.body.style.cursor = 'move'
         })
 
+        //pin body
+        const pinBody = this.pinContainer.querySelector('.pin-body')
+        pinBody.appendChild(this.buildPinContent())
+        
+        this.pinContainer.style.position = "absolute";
+        this.pinContainer.style.left = `${this.posX}px`;
+        this.pinContainer.style.top = `${this.posY}px`;
+        this.pinContainer.style.width = `${this.width}px`;
+        this.pinContainer.style.height = `${this.height}px`;
         
         document.body.appendChild(this.pinContainer)
     }
+
+    
+
+    private buildEditorModal() {
+        const parser = new DOMParser();
+        const html = parser.parseFromString(HTMLSnippets.PIN_EDITOR, 'text/html')
+        this.editorModal = html.querySelector('.pin-editor')
+        this.editorModal.id = 'pinModal'+this.id
+
+        //pin title
+        const titelInput = this.editorModal.querySelector('.pin-title-input') as HTMLInputElement
+        titelInput.value = this.title
+        titelInput.addEventListener('change', e => {
+            this.onTitleChange(e)
+        })
+
+        //pin category
+        const categorySelect = this.editorModal.querySelector('.pin-category-select') as HTMLSelectElement
+        for (const category of Category.instances) {
+            const option = document.createElement('option')
+            option.value = category.id.toString()
+            option.innerHTML = category.name
+            if (category.id == this.category.id) {
+                option.selected = true
+            }
+            categorySelect.appendChild(option)
+        }
+        categorySelect.addEventListener('change', e => {
+            this.onCategoryChange(e)
+        })
+
+        //pin content
+        const pinContent = this.editorModal.querySelector('.pin-content-editor') as HTMLDivElement
+        pinContent.append(this.buildEditorContent())
+        
+        //save Button
+        const saveButton = this.editorModal.querySelector('.save-pin-edit-btn') as HTMLButtonElement
+        saveButton.addEventListener('click', () => {
+            this.savePin()
+        });
+        document.body.appendChild(this.editorModal)        
+    }
+
+    abstract buildPinContent(): HTMLDivElement;
+    abstract buildEditorContent(): HTMLDivElement;
+    abstract savePin(): void;
 
     public displayPin() {
         this.pinContainer.style.visibility = 'visible'
@@ -85,7 +144,6 @@ export abstract class Pin {
 
         this.pinContainer.style.left = `${this.posX}px`;
         this.pinContainer.style.top = `${this.posY}px`;
-
     }
 
     private stopDrag() {
@@ -95,10 +153,13 @@ export abstract class Pin {
         document.body.style.cursor = 'auto'
     }
 
-    
-    abstract buildPinContent(): HTMLDivElement;
-    abstract savePin(): void;
+    private onTitleChange(event:Event) {
+        this.title = (event.target as HTMLInputElement).value
+        this.titleSpan.innerHTML = this.title
+    }
 
-
-
+    private onCategoryChange(event:Event) {
+        this.category = Category.getCategoryInstance(parseInt((event.target as HTMLSelectElement).value))
+        this.categoryIcon.style.backgroundColor = this.category.color
+    }
 }

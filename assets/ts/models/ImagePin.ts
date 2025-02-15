@@ -46,6 +46,10 @@ export class ImagePin extends Pin{
         return pinContent;
     }
 
+    getEditContent(): HTMLDivElement {
+        throw new Error("Method not implemented.");
+    }
+
     savePin(): void {
         throw new Error("Method not implemented.");
     }

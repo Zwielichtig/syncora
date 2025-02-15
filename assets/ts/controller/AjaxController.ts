@@ -1,4 +1,4 @@
-class AjaxController {
+export class AjaxController {
 
     /**
 	 * 
@@ -17,11 +17,11 @@ class AjaxController {
         });
         if (!response.ok) {
 			try {
-				return await response.json();
+				return await response.text();
 			} catch (error) {
 				throw new Error(response.status.toString())
 			}
 		}
-        return await response.json();
+        return await response.text();
     }
 }
