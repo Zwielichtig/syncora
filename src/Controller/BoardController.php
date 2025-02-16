@@ -10,6 +10,8 @@ class BoardController extends BaseController
     #[Route('/', name: 'homepage')]
     public function showHome(): Response
     {
-        return $this->render('/board.html.twig');
+        return $this->render('/board.html.twig', [
+            'loggedIn' => $_SESSION['loggedIn']
+        ]);
     }
 }

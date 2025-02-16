@@ -6,14 +6,14 @@ class SessionService
 {
     public function manageSession()
     {
-        $timeout                                      = 86400 * 7;
+        $timeout = 86400 * 7;
 
         if (isset($_COOKIE['session'])) {
             session_id($_COOKIE['session']);
             $this->startSession($timeout);
 
-            $_SESSION['ipAddress']    = $_SERVER['REMOTE_ADDR'];
-            $_SESSION['userAgent']    = $_SERVER['HTTP_USER_AGENT'];
+            $_SESSION['ipAddress'] = $_SERVER['REMOTE_ADDR'];
+            $_SESSION['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
 
             if (!$this->secureSession($_SESSION['ipAddress'], $_SESSION['userAgent'])) {
                 session_unset();
@@ -41,7 +41,7 @@ class SessionService
             $this->startSession($timeout);
             $this->setCookieDetails($timeout);
         }
-        $_SESSION['lastVisit']    = time();
+        $_SESSION['lastVisit'] = time();
         setcookie('session', session_id(), time() + $timeout);
     }
 

@@ -1,0 +1,106 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container">
+    <div class="card shadow-lg auth-card" style="max-width: 400px; width: 90%;">
+        <div class="card-body p-4">
+            <ul class="nav nav-pills mb-4" id="authTabs" role="tablist">
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link active w-100" data-bs-toggle="pill" data-bs-target="#login-tab" type="button">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100" data-bs-toggle="pill" data-bs-target="#register-tab" type="button">
+                        <i class="fas fa-user-plus me-2"></i>Registrieren
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="authTabContent">
+                <!-- Login Tab -->
+                <div class="tab-pane fade show active" id="login-tab">
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 0">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" name="username" class="form-control" placeholder="Nutzername" required="true">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 1">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="password" class="form-control" placeholder="Passwort" required="true">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+
+                <!-- Register Tab -->
+                <div class="tab-pane fade" id="register-tab">
+                    <form action="/register" method="post">
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 0">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" name="username" class="form-control" placeholder="Nutzername" required="true">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 1">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" name="email" class="form-control" placeholder="Email" required="true">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 2">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="password" class="form-control" placeholder="Passwort" required="true">
+                            </div>
+                            <div id="password-requirements" class="mt-1 small d-flex gap-2 flex-wrap d-none">
+                                <span class="requirement text-muted">
+                                    <i class="fas fa-circle me-1"></i>8+ Zeichen
+                                </span>
+                                <span class="requirement text-muted">
+                                    <i class="fas fa-circle me-1"></i>Großbuchstabe
+                                </span>
+                                <span class="requirement text-muted">
+                                    <i class="fas fa-circle me-1"></i>Kleinbuchstabe
+                                </span>
+                                <span class="requirement text-muted">
+                                    <i class="fas fa-circle me-1"></i>Zahl
+                                </span>
+                                <span class="requirement text-muted">
+                                    <i class="fas fa-circle me-1"></i>Sonderzeichen
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group" style="--index: 3">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="passwordConfirm" class="form-control" placeholder="Passwort wiederholen" required="true">
+                                <div class="invalid-feedback">
+                                    Passwörter stimmen nicht überein
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Registrieren</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabList = document.querySelector('#authTabs');
+    const tabs = document.querySelectorAll('[data-bs-toggle="pill"]');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', (e) => {
+            const targetId = e.target.getAttribute('data-bs-target');
+            tabList.setAttribute('data-active-tab',
+                targetId === '#register-tab' ? 'register' : 'login'
+            );
+        });
+    });
+});
+</script>

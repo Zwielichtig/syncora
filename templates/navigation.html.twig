@@ -65,9 +65,23 @@
         </a>
       </li>
       <li class="nav-item px-3">
-        <a class="nav-link" href="#">
-          <i class="fa-solid fa-user"></i>
-        </a>
+        <div class="dropdown">
+          <button class="btn dropdown-toggle px-3"
+                  type="button"
+                  id="userDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style="background: transparent; border: none;">
+            <i class="fa-solid fa-user"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li>
+              <a class="dropdown-item" href="/logout">
+                <i class="fas fa-sign-out-alt me-2"></i>Abmelden
+              </a>
+            </li>
+          </ul>
+        </div>
       </li>
     </ul>
   </div>

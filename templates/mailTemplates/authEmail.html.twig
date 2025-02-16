@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ subject }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(to right, #d1c1e4, #84CEEB);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #fff;
+            margin: 0;
+            text-align: center;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: linear-gradient(to right, #d1c1e4, #84CEEB);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ subject }}</h1>
+    </div>
+
+    <div class="content">
+        <h2>{{ greeting }}</h2>
+
+        <p>Vielen Dank für Ihre Registrierung bei Syncora. Um Ihr Konto zu aktivieren und alle Funktionen nutzen zu können, bestätigen Sie bitte Ihre E-Mail-Adresse.</p>
+
+        <p style="text-align: center;">
+            <a href="{{ absolute_url(path('verify_email', {'token': authToken})) }}" class="button">
+                E-Mail-Adresse bestätigen
+            </a>
+        </p>
+
+        <p>Falls der Button nicht funktioniert, kopieren Sie bitte diesen Link in Ihren Browser:</p>
+        <p style="word-break: break-all;">
+            {{ absolute_url(path('verify_email', {'token': authToken})) }}
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht darauf.</p>
+        <p>© {{ "now"|date("Y") }} Syncora. Alle Rechte vorbehalten.</p>
+    </div>
+</body>
+</html>

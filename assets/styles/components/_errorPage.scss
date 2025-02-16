@@ -1,0 +1,63 @@
+.error-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(209, 193, 228, 0.1), rgba(132, 206, 235, 0.1));
+    padding: 2rem;
+
+    .error-content {
+        text-align: center;
+        background: white;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        max-width: 500px;
+        width: 90%;
+        animation: fadeIn 0.5s ease;
+
+        h1 {
+            font-size: 6rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #d1c1e4, #84CEEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        h2 {
+            color: #2d3748;
+            margin: 1rem 0;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #4a5568;
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #d1c1e4, #84CEEB);
+            border: none;
+            padding: 0.8rem 2rem;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(132, 206, 235, 0.3);
+            }
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
