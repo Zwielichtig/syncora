@@ -10,6 +10,8 @@ import { NotePin } from './models/NotePin';
 import { PinType } from './models/PinType';
 import { ToDoEntry } from './models/ToDoEntry';
 import { ToDoPin } from './models/ToDoPin';
+import { AppointmentPin } from './models/AppointmentPin';
+import { ImagePin } from './models/ImagePin';
 
 
 
@@ -34,6 +36,15 @@ const toDoPin = new ToDoPin(2, pinType2, category, 'To Do Notiz', 700, 300, 300,
 toDoPin.buildPin()
 
 
+const pinType3 = new PinType(3, 'Termin')
+const date = new Date("2025-04-01")
+const appointmentPin = new AppointmentPin(3, pinType3, category, 'Termin', 300, 600, 300, 200, date)
+appointmentPin.buildPin()
+
+///home/syncora/Projects/syncora/public/fileadmin/user_uploads/hampter-1.webp
+const pinType4 = new PinType(4, 'Bild')
+const imagePin = new ImagePin(4, pinType4, category, 'Hampter', 700, 600, 300, 200, "fileadmin/user_uploads/hampter-1.webp")
+imagePin.buildPin()
 
 
 document.addEventListener('DOMContentLoaded', () => {

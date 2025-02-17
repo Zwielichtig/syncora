@@ -32,6 +32,15 @@
         transition: color 0.3s ease;
         margin-left: auto; /* Stift nach rechts schieben */
     }
+
+    .image-not-found-icon {
+        width: 20px;
+        height: 20px;
+        color: #555;
+        transition: color 0.3s ease;
+        margin-left: auto;
+        margin-right: auto;
+    }
     
     .edit-icon:hover {
         color: #000;

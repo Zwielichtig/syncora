@@ -115,19 +115,11 @@ export abstract class Pin {
 
         //pin content
         const pinContent = this.editorModal.querySelector('.pin-content-editor') as HTMLDivElement
-        pinContent.append(this.buildEditorContent())
-        
-        //save Button
-        const saveButton = this.editorModal.querySelector('.save-pin-edit-btn') as HTMLButtonElement
-        saveButton.addEventListener('click', () => {
-            this.savePin()
-        });
-        document.body.appendChild(this.editorModal)        
+        pinContent.append(this.buildEditorContent())       
     }
 
     abstract buildPinContent(): HTMLDivElement;
     abstract buildEditorContent(): HTMLDivElement;
-    abstract savePin(): void;
 
     public displayPin() {
         this.pinContainer.style.visibility = 'visible'
@@ -138,6 +130,7 @@ export abstract class Pin {
     }
 
     private drag(event: MouseEvent) {
+
         if (!this.isDragging) return;
         this.posX = event.clientX - this.dragX
         this.posY = event.clientY - this.dragY
@@ -162,4 +155,22 @@ export abstract class Pin {
         this.category = Category.getCategoryInstance(parseInt((event.target as HTMLSelectElement).value))
         this.categoryIcon.style.backgroundColor = this.category.color
     }
+
+
+    public getPinData() : Object {
+        const data = {
+            id: this.id,
+            category: this.category.name,
+            type: this.type.id,
+            title: this.title,
+            posX: this.posX,
+            posY: this.posY,
+            width: this.width,
+            height: this.height,
+            pin_content: this.getPinContentData()
+        }
+        return data
+    }
+
+    public abstract getPinContentData():Object;
 }

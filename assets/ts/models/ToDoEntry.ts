@@ -8,6 +8,8 @@ export class ToDoEntry {
     content: string 
     entryContainer: HTMLDivElement
 
+    entryEditor: HTMLDivElement
+
     checkbox : HTMLInputElement
     contentSpan : HTMLSpanElement
     datetimeSpan : HTMLSpanElement
@@ -32,8 +34,6 @@ export class ToDoEntry {
         const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_ENTRY, 'text/html')
         
         this.entryContainer = htmlEntry.querySelector('.to-do-entry')
-
-        let spans = this.entryContainer.querySelectorAll('span')
 
         //checkbox
         this.checkbox = htmlEntry.querySelector('.to-do-entry-checkbox') 
@@ -63,9 +63,8 @@ export class ToDoEntry {
         const parser = new DOMParser()
         const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_ENTRY_EDITOR, 'text/html')
         
-        const entryEditor = htmlEntry.querySelector('.to-do-entry-editor') as HTMLDivElement
-        const inputs = entryEditor.querySelectorAll('input')
-
+        this.entryEditor = htmlEntry.querySelector('.to-do-entry-editor') as HTMLDivElement
+        
         //checkbox
         const checkbox = htmlEntry.querySelector('.to-do-entry-checkbox') as HTMLInputElement
         if (this.checked) {
@@ -91,10 +90,11 @@ export class ToDoEntry {
             this.onDatetimeChange(e)
         })
 
-        return entryEditor
+        return this.entryEditor
     }
 
     private onCheckboxChange(event: Event) {
+        console.log((event.target as HTMLInputElement).checked)
         this.checked = (event.target as HTMLInputElement).checked
         if (this.checked) {
             this.checkbox.setAttribute('checked', null)
@@ -111,8 +111,18 @@ export class ToDoEntry {
 
     private onDatetimeChange(event: Event) {
         this.datetime = new Date((event.target as HTMLInputElement).value)
-        this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString()
-        
+        this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString() 
+    }
+
+    public getEntryData(): Object {
+        const data = {
+            id: this.id,
+            row: this.row,
+            content: this.content,
+            datetime: this.datetime,
+            checked: this.checked
+        }
+        return data
     }
 
 

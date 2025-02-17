@@ -10,6 +10,8 @@ export class ToDoPin extends Pin {
 
     public static instances: ToDoPin[]
 
+    pinContainer: HTMLDivElement;
+
 
     public static getToDoPinInstance(id: number): ToDoPin {
         for (const pin of this.instances) {
@@ -48,15 +50,83 @@ export class ToDoPin extends Pin {
     }
 
     buildEditorContent(): HTMLDivElement {
-        const editorContent = document.createElement('div')
+        const parser = new DOMParser()
+        const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_EDITOR, 'text/html')
+        
+        const editorContent = htmlEntry.querySelector('.to-do-editor') as HTMLDivElement
+
+        const editorEntries = editorContent.querySelector('.to-do-editor-entries') as HTMLDivElement
+        
         for (const entry of this.entries) {
-            editorContent.appendChild(entry.buildEntryEditor())
+            const entryContainer = entry.buildEntryEditor()
+            
+            //delete
+            const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
+            deleteButton.addEventListener('click', () => {
+                this.deleteEntry(entry.row)
+            })
+
+            editorEntries.appendChild(entryContainer)
         }
+
+        //add
+        const addButton = editorContent.querySelector('.to-do-entry-add-btn') as HTMLButtonElement
+        addButton.addEventListener('click', () => {
+            const newEntry = this.addEntry()
+            const entryContainer = newEntry.buildEntryEditor()
+            
+            //delete
+            const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
+            deleteButton.addEventListener('click', () => {
+                this.deleteEntry(newEntry.row)
+            })
+            editorEntries.appendChild(entryContainer)
+        })
+
         return editorContent;
     }
 
     savePin(): void {
         throw new Error("Method not implemented.");
+    }
+
+    private addEntry () : ToDoEntry {
+        let row = 1
+        this.entries.forEach(entry => {
+            if (entry.row > row) {
+                row = entry.row
+            }
+        })
+        row ++
+        console.log(row)
+        const newEntry = new ToDoEntry(null, row, null, false, '')
+        this.entries.push(newEntry)
+        this.pinContainer.appendChild(newEntry.buildEntry())
+        return newEntry
+
+    }
+
+    private deleteEntry(row:number) {
+        for (const [index, entry] of Object.entries(this.entries)) {
+            if (entry.row == row) {
+                entry.entryContainer.remove()
+                entry.entryEditor.remove()
+                this.entries.splice(parseInt(index), 1)
+            } else if  (entry.row > row) {
+                entry.row -= 1
+            }
+        }
+    }
+
+    public getPinContentData(): Object {
+        let entryData : Array<Object> = []
+        this.entries.forEach(entry => {
+            entryData.push(entry.getEntryData())
+        });
+        const data = {
+            entries: entryData
+        }
+        return data
     }
     
 }

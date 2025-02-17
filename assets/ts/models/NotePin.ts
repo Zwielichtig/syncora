@@ -69,4 +69,11 @@ export class NotePin extends Pin{
         this.contentArea.innerHTML = this.content
     }
 
+    public getPinContentData(): Object {
+        const data = {
+            content: this.content
+        }
+        return data
+    }
+
 }

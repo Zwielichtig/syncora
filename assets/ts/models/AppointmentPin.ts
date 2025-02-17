@@ -38,9 +38,10 @@ export class AppointmentPin extends Pin {
     
 
     public buildPinContent(): HTMLDivElement {
+        console.log(this.title)
         const parser = new DOMParser()
-        const html = parser.parseFromString(HTMLSnippets.NOTE_CONTENT, 'text/html')
-        const appointmentContainer = html.querySelector('.note') as HTMLDivElement
+        const html = parser.parseFromString(HTMLSnippets.APPOINTMENT_CONTENT, 'text/html')
+        const appointmentContainer = html.querySelector('.appointment') as HTMLDivElement
 
         //datetime span 
         this.datetimeSpan = appointmentContainer.querySelector('.appointment-datetime')
@@ -54,7 +55,7 @@ export class AppointmentPin extends Pin {
 
     public buildEditorContent() : HTMLDivElement{
         const parser = new DOMParser()
-        const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_ENTRY_EDITOR, 'text/html')
+        const htmlEntry = parser.parseFromString(HTMLSnippets.APPOINTMENT_EDITOR, 'text/html')
         
         const entryEditor = htmlEntry.querySelector('.appointment-editor') as HTMLDivElement
 
@@ -70,13 +71,16 @@ export class AppointmentPin extends Pin {
         return entryEditor
     }
 
-    savePin(): void {
-        throw new Error("Method not implemented.");
-    }
-
     private onDatetimeChange(event:Event) {
         this.datetime = new Date((event.target as HTMLInputElement).value)
         this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString();
+    }
+
+    public getPinContentData(): Object {
+        const data = {
+            datetime: this.datetime.toISOString()
+        }
+        return data
     }
     
 }
