@@ -24,6 +24,19 @@ export class CalendarController {
             },
             timeZone: 'UTC',
             height: 750,
+
+            eventMouseEnter: function(mouseEnterInfo) {
+                let eventEl = mouseEnterInfo.el;
+                eventEl.style.transform = 'scale(1.01)';
+                eventEl.style.boxShadow = '0 0 10px rgba(255, 111, 97, 0.6)';
+                eventEl.style.transition = 'all 0.3s ease-in-out';
+            },
+
+            eventMouseLeave: function(mouseLeaveInfo) {
+                let eventEl = mouseLeaveInfo.el;
+                eventEl.style.transform = 'scale(1)';
+                eventEl.style.boxShadow = 'none';
+            }
         });
 
         calendar.render();
