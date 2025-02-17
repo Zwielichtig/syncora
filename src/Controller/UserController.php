@@ -15,47 +15,34 @@ class UserController extends BaseController
     public function register(EntityManagerInterface $entityManager): Response
     {
         if ($this->validationService->validateForm($this->request)) {
-            $userRepository   = $entityManager->getRepository(User::class);
-            $existingUsername = $userRepository->findOneBy(['username' => $this->request['username']]);
-            $existingEmail    = $userRepository->findOneBy(['email' => $this->request['email']]);
-            $errors           = [];
+            $userRepository = $entityManager->getRepository(User::class);
 
-            $existingUsername && $errors['username'] = 'Dieser Benutzername ist bereits vergeben';
-            $existingEmail && $errors['email'] = 'Diese E-Mail-Adresse wird bereits verwendet';
+            if (null == $userRepository->findOneBy(['username' => $this->request['username']]) || null == $userRepository->findOneBy(['email' => $this->request['email']])) {
+                $authToken = ByteString::fromRandom(32)->toString();
 
-            if (!empty($errors)) {
+                $user = new User();
+                $user->setUsername($this->request['username']);
+                $user->setEmail($this->request['email']);
+                $user->setPassword(password_hash($this->request['username'] . $this->request['password'], PASSWORD_ARGON2I));
+                $user->setAuthToken($authToken);
+                $user->setVerified(false);
+
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $this->mailService->sendEmail(
+                    'authEmail',
+                    $this->request['email'],
+                    'Registrierung abschließen',
+                    'Willkommen bei Syncora',
+                    $authToken
+                );
+
+                $this->setUserSession($user);
+
                 return $this->redirectToRoute('homepage', [
-                    'errors' => $errors,
-                    'formData' => [
-                        'username' => $this->request['username'],
-                        'email' => $this->request['email']
-                    ]
                 ]);
             }
-            $authToken = ByteString::fromRandom(32)->toString();
-
-            $user = new User();
-            $user->setUsername($this->request['username']);
-            $user->setEmail($this->request['email']);
-            $user->setPassword(password_hash($this->request['username'] . $this->request['password'], PASSWORD_ARGON2I));
-            $user->setAuthToken($authToken);
-            $user->setVerified(false);
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $this->mailService->sendEmail(
-                'authEmail',
-                $this->request['email'],
-                'Registrierung abschließen',
-                'Willkommen bei Syncora',
-                $authToken
-            );
-
-            $this->setUserSession($user);
-
-            return $this->redirectToRoute('homepage', [
-            ]);
         }
 
         return $this->redirectToRoute('homepage', [
