@@ -504,3 +504,17 @@
     backdrop-filter: blur(8px);
     background: rgba(45, 55, 72, 0.4);
 }
+
+.navbar {
+    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+    border: 2px solid #8860D0;
+    border-radius: 3px;
+
+    .dropdown-toggle {
+        background: transparent;
+        color: #2d3748;
+        border: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+}
