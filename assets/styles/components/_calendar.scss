@@ -1,0 +1,96 @@
+.fc-toolbar {
+    padding: 15px 15px !important; // Adds space around the toolbar (top, bottom, left, right
+
+    .fc-button-group {
+      gap: 4px; // Space between buttons
+    }
+        .fc-button {
+        background: linear-gradient(to right, #d1c1e4, #84CEEB) !important;
+        color: rgb(41, 41, 41) !important;
+        border: 2px solid #8860D0 !important;
+        border-radius: 5px !important;
+        padding: 8px 15px !important; transition: all 0.3s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    
+        // Elegant glow effect on hover
+    &:hover {
+        background: linear-gradient(to right, #b8a4d1, #6fb8e3) !important; // Slightly deeper gradient
+        border-color: #7048a4 !important; // Darker purple border
+        transform: scale(1.1); // Slight zoom effect
+        box-shadow: 0 0 12px rgba(136, 96, 208, 0.6), 0 0 18px rgba(132, 206, 235, 0.4); // Soft glow in matching colors
+      }
+  
+      // Subtle click effect
+      &:active {
+        background: linear-gradient(to right, #a78cc6, #5ea5d6) !important;
+        border-color: #5a3680 !important; // Even darker border when clicked
+        box-shadow: 0 0 10px rgba(112, 72, 164, 0.8); // Slight glow when clicked
+        transform: scale(1.05);
+      }
+  
+      // Cool animated light reflection effect
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+        transition: left 0.4s ease-in-out;
+      }
+  
+      &:hover::after {
+        left: 100%;
+      }
+    }
+    
+        // Active button styling (e.g., "Month" button)
+        .fc-button-active {
+        background: linear-gradient(to right, #d1c1e4, #84CEEB) !important;
+        color: rgb(0, 0, 0) !important;
+        font-weight: bold;
+        }
+  }
+  
+  // FullCalendar Table Styling
+.fc {
+    background: white !important; // Matches button gradient
+    border-radius: 10px; // Rounded edges for a soft look
+    padding: 10px;
+  }
+  
+  // Header Row (Days of the Week)
+  .fc-scrollgrid-section-header th {
+    background: white !important; // Subtle gradient
+    color: white !important;
+    border-bottom: 2px solid #8860D0 !important; // Adds a purple divider line
+    text-align: center;
+    font-size: 16px;
+    font-weight: lighter;
+  }
+  
+  // Calendar Cells (Days)
+  .fc-daygrid-day {
+    background: white !important;
+    border: 1px solid rgba(136, 96, 208, 0.2) !important;
+    transition: background 0.4s ease-in-out, transform 0.2s ease-in-out;
+    position: relative;
+  }
+  
+  // Today's Date Highlight
+  .fc-day-today {
+    background: rgba(132, 206, 235, 0.3) !important; // Light blue highlight
+    border: 2px solid #5ea5d6 !important; // Slightly darker blue border
+    font-weight: bold;
+  }
+  
+  // Event Styling
+  .fc-event {
+    background: linear-gradient(to right, #ff6f61, #ffb88c) !important; // Soft red-orange for contrast
+    color: white !important;
+    border-radius: 5px;
+    border: none;
+    padding: 5px;
+  }
