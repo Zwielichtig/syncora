@@ -14,12 +14,11 @@ class MailService
     ) {
     }
 
-    public function sendEmail(string $template, string $to, string $subject, string $greeting, string $message, string $authToken): void
+    public function sendEmail(string $template, string $to, string $subject, string $greeting, string $authToken): void
     {
         $emailContent = $this->twig->render('/mailTemplates/' . $template . '.html.twig', [
             'subject' => $subject,
             'greeting' => $greeting,
-            'message' => $message,
             'authToken' => $authToken
         ]);
 

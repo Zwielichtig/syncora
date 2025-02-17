@@ -12,6 +12,10 @@ class ValidationService
         $valid         = true;
         $filter        = $GLOBALS['settings']['backendValidation'];
 
+        if (empty($request)) {
+            return false;
+        }
+
         foreach ($request as $key => $value) {
             if (!empty($value)) {
                 switch ($filter[$key]['mode']) {

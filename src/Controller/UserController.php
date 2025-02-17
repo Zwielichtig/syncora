@@ -49,7 +49,6 @@ class UserController extends BaseController
                 $this->request['email'],
                 'Registrierung abschließen',
                 'Willkommen bei Syncora',
-                'Bitte klicken Sie auf den folgenden Link, um Ihre Registrierung abzuschließen:',
                 $authToken
             );
 
@@ -60,26 +59,32 @@ class UserController extends BaseController
         }
 
         return $this->redirectToRoute('homepage', [
-            'errors' => ['form' => 'Ungültige Formulardaten']
+            'loginFailure' => $_SESSION['loginFailure'] = false,
+            'registerFailure' => $_SESSION['registerFailure'] = true,
         ]);
     }
 
     #[Route('/login')]
     public function login(EntityManagerInterface $entityManager): Response
     {
-        $userRepository = $entityManager->getRepository(User::class);
-        $user = $userRepository->findOneBy(['username' => $this->request['username']]);
+        if ($this->validationService->validateForm($this->request)) {
+            $userRepository = $entityManager->getRepository(User::class);
+            $user = $userRepository->findOneBy(['username' => $this->request['username']]);
 
-        if (password_verify($this->request['username'] . $this->request['password'], $user->getPassword())) {
-            $this->setUserSession($user);
+            if ($user) {
+                if (password_verify($this->request['username'] . $this->request['password'], $user->getPassword())) {
+                    $this->setUserSession($user);
 
-            return $this->redirectToRoute('homepage', [
-            ]);
-        } else {
-            return $this->redirectToRoute('homepage', [
-                'loginFailure' => true,
-            ]);
+                    return $this->redirectToRoute('homepage', [
+                    ]);
+                }
+            }
         }
+
+        return $this->redirectToRoute('homepage', [
+            'loginFailure' => $_SESSION['loginFailure'] = true,
+            'registerFailure' => $_SESSION['loginFailure'],
+        ]);
     }
 
     #[Route('/logout', name: 'logout')]

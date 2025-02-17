@@ -1,5 +1,5 @@
 <div class="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container">
-    <div class="card shadow-lg auth-card" style="max-width: 400px; width: 90%;">
+    <div class="card shadow-lg auth-card" style="max-width: 400px; width: 90%; backdrop-filter: blur(10px);">
         <div class="card-body p-4">
             <ul class="nav nav-pills mb-4" id="authTabs" role="tablist">
                 <li class="nav-item flex-fill" role="presentation">
@@ -30,6 +30,9 @@
                                 <input type="password" name="password" class="form-control" placeholder="Passwort" required="true">
                             </div>
                         </div>
+                        {% if loginFailure == true %}
+                            <p class="text-danger">Nutzername oder Passwort falsch</p>
+                        {% endif %}
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
                 </div>
@@ -80,6 +83,9 @@
                                     Passwörter stimmen nicht überein
                                 </div>
                             </div>
+                            {% if registerFailure == true %}
+                                <p class="text-danger">Registrierung fehlgeschlagen</p>
+                            {% endif %}
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Registrieren</button>
                     </form>
