@@ -90,7 +90,6 @@ class UserController extends BaseController
     #[Route('/logout', name: 'logout')]
     public function logout(): Response
     {
-        $_SESSION['loggedIn'] = false;
         unset($_SESSION['user']);
         session_destroy();
 
@@ -121,7 +120,6 @@ class UserController extends BaseController
     }
 
     private function setUserSession($user) {
-        $_SESSION['loggedIn'] = true;
         $_SESSION['user'] = [
             'id' => $user->getId(),
             'userName' => $user->getUsername(),

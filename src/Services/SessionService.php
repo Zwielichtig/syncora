@@ -31,8 +31,8 @@ class SessionService
             $_SESSION['lastVisit'] = time();
         }
 
-        if (!isset($_SESSION['loggedIn'])) {
-            $_SESSION['loggedIn'] = false;
+        if (!isset($_SESSION['user'])) {
+            $_SESSION['user'] = null;
         }
 
         if ((time() - $_SESSION['lastVisit']) > $timeout) {
@@ -69,6 +69,6 @@ class SessionService
 
         $_SESSION['ipAddress']    = $_SERVER['REMOTE_ADDR'];
         $_SESSION['userAgent']    = $_SERVER['HTTP_USER_AGENT'];
-        $_SESSION['loggedIn']     = false;
+        $_SESSION['user']         = null;
     }
 }

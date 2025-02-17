@@ -13,10 +13,6 @@
         {% endblock %}
     </head>
     <body data-page-type="{% block pageType %}{% endblock %}">
-        {% if loggedIn == true %}
-            {{ include('navigation.html.twig') }}
-        {% endif %}
-
         {% block body %}{% endblock %}
     </body>
 </html>

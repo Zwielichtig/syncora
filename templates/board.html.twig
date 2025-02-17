@@ -4,10 +4,14 @@
 {# {% block pageType %}homepage{% endblock %} #}
 {% block pageType %}login{% endblock %}
 {% block body %}
-    {% if loggedIn == false %}
+    {% if user == null %}
         {{ include('./partials/login.html.twig') }}
     {% else %}
-
+        {% if user.verified == false %}
+            {{ include ('./partials/userMessage.html.twig') }}
+        {% else %}
+            {{ include('partials/navigation.html.twig') }}
+        {% endif %}
     {% endif %}
 {% endblock %}
 
