@@ -10,6 +10,12 @@ class CalendarController extends BaseController
     #[Route('/calendar', name: 'calendar')]
     public function showCalender(): Response
     {
-        return $this->render('/calendar.html.twig');
+        if ($_SESSION['user'] == null) {
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('/calendar.html.twig', [
+            'user' => $_SESSION['user']
+        ]);
     }
 }

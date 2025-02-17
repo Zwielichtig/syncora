@@ -1,0 +1,182 @@
+.auth-container {
+  min-height: 100vh;
+  background:
+    linear-gradient(45deg, rgba(209, 193, 228, 0.3), rgba(132, 206, 235, 0.3)),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.1) 10px, rgba(255, 255, 255, 0.1) 20px);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(209, 193, 228, 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(132, 206, 235, 0.4) 0%, transparent 40%);
+    animation: backgroundFloat 20s ease-in-out infinite;
+    z-index: 0;
+  }
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(132, 206, 235, 0.2);
+
+  .nav-pills {
+    position: relative;
+    margin-bottom: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      height: calc(100% - 8px);
+      background: linear-gradient(to right, #d1c1e4, #84CEEB);
+      border-radius: 6px;
+      transition: transform 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+      z-index: 1;
+    }
+
+    &[data-active-tab="register"]::before {
+      transform: translateX(100%);
+    }
+
+    .nav-link {
+      color: #4a5568;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+      position: relative;
+      z-index: 2;
+
+      &.active {
+        background: transparent;
+        color: #1a202c;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        transform: scale(1.02);
+      }
+
+      &:not(.active) {
+        background: transparent;
+
+        &:hover {
+          color: #2d3748;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    position: relative;
+    min-height: 350px;
+    display: flex;
+    align-items: flex-start;
+
+    .tab-pane {
+      width: 100%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &.fade {
+        position: absolute;
+        opacity: 0;
+        transform: translateX(20px);
+
+        &.show {
+          position: relative;
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      form {
+        width: 100%;
+      }
+    }
+  }
+
+  .form-control {
+    border: 1px solid rgba(132, 206, 235, 0.2);
+    padding: 0.8rem 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      border-color: #84CEEB;
+      box-shadow: 0 0 0 0.2rem rgba(132, 206, 235, 0.25);
+    }
+
+    &::placeholder {
+      color: #718096;
+    }
+  }
+
+  .input-group {
+    transform: translateX(0);
+    opacity: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: calc(var(--index, 0) * 0.08s);
+
+    .input-group-text {
+      background: linear-gradient(to right, #d1c1e4, #84CEEB);
+      border: none;
+      color: white;
+    }
+  }
+
+  .tab-pane.fade:not(.show) .input-group {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  .btn-primary {
+    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+    border: none;
+    padding: 0.8rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(132, 206, 235, 0.3);
+    }
+  }
+
+  .form-check-input:checked {
+    background-color: #84CEEB;
+    border-color: #84CEEB;
+  }
+
+  label {
+    color: #2d3748;
+    font-weight: 500;
+  }
+}
+
+@keyframes backgroundFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(2%, 2%) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1%, 3%) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-3%, -1%) rotate(0.5deg);
+  }
+}

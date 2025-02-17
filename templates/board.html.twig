@@ -1,9 +1,17 @@
 {% extends "base.html.twig" %}
 
 {% block title %}Board{% endblock %}
-{% block pageType %}homepage{% endblock %}
-
+{# {% block pageType %}homepage{% endblock %} #}
+{% block pageType %}login{% endblock %}
 {% block body %}
-    <h1>Board</h1>
-    <p>It is awesome!</p>
+    {% if user == null %}
+        {{ include('./partials/login.html.twig') }}
+    {% else %}
+        {% if user.verified == false %}
+            {{ include ('./partials/userMessage.html.twig') }}
+        {% else %}
+            {{ include('partials/navigation.html.twig') }}
+        {% endif %}
+    {% endif %}
 {% endblock %}
+

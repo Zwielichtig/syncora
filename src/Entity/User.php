@@ -22,6 +22,12 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $auth_token = null;
+
+    #[ORM\Column]
+    private ?bool $verified = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +65,30 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getAuthToken(): ?string
+    {
+        return $this->auth_token;
+    }
+
+    public function setAuthToken(?string $auth_token): static
+    {
+        $this->auth_token = $auth_token;
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->verified;
+    }
+
+    public function setVerified(bool $verified): static
+    {
+        $this->verified = $verified;
 
         return $this;
     }
