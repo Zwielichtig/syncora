@@ -1,5 +1,9 @@
 <?php
 
+
+namespace App\Controller;
+
+
 class UploadController extends BaseController {
 
     static function uploadFile($path, $file_name, $file) {
@@ -7,7 +11,6 @@ class UploadController extends BaseController {
             'success' => true,
             'message' => '',
         ];
-        
         if (!move_uploaded_file($file, $file_path)) {
             $status['success'] = false;
             $status['message'] = 'Die Datei '.$file_name.' konnte nicht unter '.$path.' gespeichert werden.';

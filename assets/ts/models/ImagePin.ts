@@ -55,17 +55,17 @@ export class ImagePin extends Pin{
 
     buildEditorContent(): HTMLDivElement {
         const parser = new DOMParser()
-        let imageEditor : HTMLDivElement
-        if (this.imagePath) {
-            const html = parser.parseFromString(HTMLSnippets.IMAGE_EDITOR_FILE, 'text/html')
-            imageEditor = html.querySelector('.image-editor')
-            const imageInput = imageEditor.querySelector('image-input')
-            imageInput.addEventListener('input', event => {
-                this.onImageInput(event)
-            })
-        } else {
-            const html = parser.parseFromString(HTMLSnippets.IMAGE_EDITOR_UPLOAD, 'text/html')
-        }
+        let imageEditor : HTMLDivElement = document.createElement('div')
+        // if (this.imagePath) {
+        //     const html = parser.parseFromString(HTMLSnippets.IMAGE_EDITOR_FILE, 'text/html')
+        //     imageEditor = html.querySelector('.image-editor')
+        //     const imageInput = imageEditor.querySelector('.image-input')
+        //     imageInput.addEventListener('input', event => {
+        //         this.onImageInput(event)
+        //     })
+        // } else {
+        //     const html = parser.parseFromString(HTMLSnippets.IMAGE_EDITOR_UPLOAD, 'text/html')
+        // }
         return imageEditor
     }
 
