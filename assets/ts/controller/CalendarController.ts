@@ -6,6 +6,11 @@ export class CalendarController {
             defaultView: 'dayGridMonth',
             editable: true,
             locale: 'de',
+            views: {
+                timeGrid: {
+                    allDayText: 'Gesamt'
+                }
+            },
             buttonText: {
                 today: 'Heute',
                 month: 'Monat',

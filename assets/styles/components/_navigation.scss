@@ -13,7 +13,7 @@
     transition: all 0.4s ease-in-out;
     position: relative;
     overflow: hidden;
-  
+
     // Elegant glow effect on hover
     &:hover {
       background: rgba(136, 96, 208, 0.2) !important; // Slight background visibility on hover
@@ -21,7 +21,7 @@
       transform: scale(1.1); // Slight zoom effect
       box-shadow: 0 0 12px rgba(136, 96, 208, 0.6), 0 0 18px rgba(132, 206, 235, 0.4); // Soft glow effect
     }
-  
+
     // Subtle click effect
     &:active {
       background: rgba(112, 72, 164, 0.3) !important; // Slightly darker on click
@@ -29,7 +29,7 @@
       box-shadow: 0 0 10px rgba(112, 72, 164, 0.8); // Glow when clicked
       transform: scale(1.05);
     }
-  
+
     // Cool animated light reflection effect
     &::after {
       content: "";
@@ -41,7 +41,7 @@
       background: rgba(255, 255, 255, 0.15);
       transition: left 0.4s ease-in-out;
     }
-  
+
     &:hover::after {
       left: 100%;
     }
@@ -251,4 +251,18 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.navbar {
+    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+    border: 2px solid #8860D0;
+    border-radius: 3px;
+
+    .dropdown-toggle {
+        background: transparent;
+        color: #2d3748;
+        border: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
 }
