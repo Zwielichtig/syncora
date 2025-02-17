@@ -22,8 +22,36 @@ export class LoginController {
             this.passwordFeedback?.classList.add('d-none');
         });
 
+        this.setupPasswordToggles();
         this.setupPasswordValidation();
         this.setupFormValidation();
+    }
+
+    private setupPasswordToggles() {
+        const toggleButtons = document.querySelectorAll('.password-toggle');
+
+        toggleButtons.forEach(button => {
+            const icon = button.querySelector('i');
+            // Set initial state to closed eye
+            icon?.classList.remove('fa-eye');
+            icon?.classList.add('fa-eye-slash');
+
+            button.addEventListener('click', (e) => {
+                const btn = e.currentTarget as HTMLElement;
+                const input = btn.previousElementSibling as HTMLInputElement;
+                const icon = btn.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon?.classList.remove('fa-eye-slash');
+                    icon?.classList.add('fa-eye');
+                } else {
+                    input.type = 'password';
+                    icon?.classList.remove('fa-eye');
+                    icon?.classList.add('fa-eye-slash');
+                }
+            });
+        });
     }
 
     private validatePasswordStrength(password: string): boolean {
