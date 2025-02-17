@@ -4,7 +4,7 @@ import { Pin } from './Pin';
 import { PinType } from './PinType';
 
 export class ImagePin extends Pin{
-    
+
     imagePath: string
     image: HTMLImageElement
 
@@ -36,21 +36,75 @@ export class ImagePin extends Pin{
 
     buildPinContent(): HTMLDivElement {
         const pinContent = document.createElement('div');
-        if (this.imagePath) {
-            this.loadImage(this.imagePath)
-                .then(() =>  {
-                    pinContent.appendChild(this.image);
-                    })
-                .catch(err => {
-                    const parser = new DOMParser()
-                    const html = parser.parseFromString(HTMLSnippets.IMAGE_NOT_FOUND, 'text/html')
-                    pinContent.appendChild(html.querySelector('.image-not-found'))
-                            
-                    console.error(err)
+        pinContent.className = 'image-pin-content';
 
+        if (this.imagePath) {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-container';
+
+            this.loadImage(this.imagePath)
+                .then(() => {
+                    this.image.className = 'pin-image';
+                    this.updateImageSize(); // Initial size
+                    imageContainer.appendChild(this.image);
+
+                    // Add resize observer
+                    const resizeObserver = new ResizeObserver(() => {
+                        this.updateImageSize();
+                    });
+                    resizeObserver.observe(this.pinContainer);
+
+                    // Add zoom functionality
+                    this.image.addEventListener('click', () => {
+                        const modal = document.createElement('div');
+                        modal.className = 'image-modal';
+                        modal.innerHTML = `
+                            <div class="image-modal-content">
+                                <img src="${this.imagePath}" alt="${this.title}">
+                                <button class="close-modal">&times;</button>
+                            </div>
+                        `;
+
+                        modal.addEventListener('click', (e) => {
+                            if (e.target === modal || (e.target as Element).classList.contains('close-modal')) {
+                                modal.remove();
+                            }
+                        });
+
+                        document.body.appendChild(modal);
+                    });
+                })
+                .catch(err => {
+                    const parser = new DOMParser();
+                    const html = parser.parseFromString(HTMLSnippets.IMAGE_NOT_FOUND, 'text/html');
+                    imageContainer.appendChild(html.querySelector('.image-not-found'));
+                    console.error(err);
                 });
+
+            pinContent.appendChild(imageContainer);
         }
         return pinContent;
+    }
+
+    private updateImageSize() {
+        if (this.image) {
+            const containerWidth = this.pinContainer.clientWidth - 32; // Account for padding
+            const containerHeight = this.pinContainer.clientHeight - 80; // Account for header and padding
+
+            // Calculate aspect ratio
+            const imageRatio = this.image.naturalWidth / this.image.naturalHeight;
+            const containerRatio = containerWidth / containerHeight;
+
+            if (imageRatio > containerRatio) {
+                // Image is wider than container
+                this.image.style.width = `${containerWidth}px`;
+                this.image.style.height = 'auto';
+            } else {
+                // Image is taller than container
+                this.image.style.height = `${containerHeight}px`;
+                this.image.style.width = 'auto';
+            }
+        }
     }
 
     buildEditorContent(): HTMLDivElement {
@@ -99,7 +153,7 @@ export class ImagePin extends Pin{
                 this.image.width = this.width
                 resolve(img);
             }
-                
+
             img.onerror = () => reject(new Error(`Fehler beim Laden des Bildes: ${url}`));
             img.src = this.imagePath;
         });
@@ -111,5 +165,5 @@ export class ImagePin extends Pin{
         }
         return data
     }
-    
+
 }

@@ -2,12 +2,13 @@ export class HTMLSnippets {
     public static PIN : string = `
         <div class="pin">
             <div class="pin-header">
-                <div class="category-icon">
+                <div class="category-icon rounded-circle">
                 </div>
                 <span class="pin-title">
                 </span>
-                <div class="fa-solid fa-pen edit-icon" title="bearbeiten" data-bs-toggle="modal">
-                </div>
+                <button type="button" class="btn edit-icon" title="bearbeiten">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
             </div>
             <div class="pin-body">
             </div>
@@ -15,33 +16,36 @@ export class HTMLSnippets {
     `
 
     public static NOTE_CONTENT = `
-        <div class="note">
-            <p class="note-content"></p>
+        <div class="note p-3">
+            <p class="note-content mb-0"></p>
         </div>
     `
 
     public static TO_DO_CONTENT = `
-        <div class="to-do">
+        <div class="to-do p-3">
         </div>
     `
 
     public static TO_DO_ENTRY = `
-        <div class="to-do-entry">
-            <input type="checkbox" class="to-do-entry-checkbox">
-            <span class="to-do-entry-content"></span>
-            <span class="to-do-entry-datetime">
+        <div class="to-do-entry d-flex align-items-center mb-2">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input to-do-entry-checkbox">
+                <span class="to-do-entry-content ms-2"></span>
+            </div>
+            <small class="to-do-entry-datetime text-muted ms-auto"></small>
         </div>
-        `
-    
+    `
+
     public static APPOINTMENT_CONTENT = `
-    <div class="appointment">
-        <span class="appointment-datetime">
-    </div>
+        <div class="appointment p-3">
+            <i class="far fa-calendar-alt me-2"></i>
+            <span class="appointment-datetime"></span>
+        </div>
     `
 
     public static IMAGE_NOT_FOUND = `
-        <div class="image-not-found">
-            <i class="fa-regular fa-notdef image-not-found-icon"></i>
+        <div class="image-not-found d-flex align-items-center justify-content-center p-4">
+            <i class="fa-regular fa-image text-muted fs-1"></i>
         </div>
     `
 
@@ -80,12 +84,12 @@ export class HTMLSnippets {
     public static TO_DO_EDITOR = `
         <div class="to-do-editor">
             <div class="to-do-editor-entries">
-            </div>  
+            </div>
             <div class="to-do-editor-add">
                 <button class="to-do-entry-add-btn">
                     <i class="fa-solid fa-plus"></i>
                 </button>
-            </div> 
+            </div>
         </div>
     `
 
@@ -134,7 +138,7 @@ export class HTMLSnippets {
             </div>
         </div>
     `
-    
+
     public static IMAGE_EDITOR_FILE = `
          <div>
             <div class="image-thumb">

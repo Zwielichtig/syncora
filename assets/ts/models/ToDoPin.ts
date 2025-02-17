@@ -41,25 +41,29 @@ export class ToDoPin extends Pin {
     }
 
     buildPinContent(): HTMLDivElement {
-        const pinContent = document.createElement('div')
         const parser = new DOMParser();
+        const html = parser.parseFromString(HTMLSnippets.TO_DO_CONTENT, 'text/html');
+        const pinContent = html.querySelector('.to-do') as HTMLDivElement;
+
+        // Add entries to the todo container
         for (const entry of this.entries) {
-            this.pinContainer.appendChild(entry.buildEntry())
+            pinContent.appendChild(entry.buildEntry());
         }
+
         return pinContent;
     }
 
     buildEditorContent(): HTMLDivElement {
         const parser = new DOMParser()
         const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_EDITOR, 'text/html')
-        
+
         const editorContent = htmlEntry.querySelector('.to-do-editor') as HTMLDivElement
 
         const editorEntries = editorContent.querySelector('.to-do-editor-entries') as HTMLDivElement
-        
+
         for (const entry of this.entries) {
             const entryContainer = entry.buildEntryEditor()
-            
+
             //delete
             const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
             deleteButton.addEventListener('click', () => {
@@ -74,7 +78,7 @@ export class ToDoPin extends Pin {
         addButton.addEventListener('click', () => {
             const newEntry = this.addEntry()
             const entryContainer = newEntry.buildEntryEditor()
-            
+
             //delete
             const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
             deleteButton.addEventListener('click', () => {
@@ -128,5 +132,5 @@ export class ToDoPin extends Pin {
         }
         return data
     }
-    
+
 }

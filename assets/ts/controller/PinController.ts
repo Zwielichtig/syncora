@@ -28,9 +28,9 @@ export class PinController {
     }
 
     public static createPin(pinTypeId: number) {
-        
+
     }
 
-    
+
 
 }
