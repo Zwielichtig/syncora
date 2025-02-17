@@ -12,7 +12,7 @@
         padding: 8px 15px !important; transition: all 0.3s ease-in-out;
         position: relative;
         overflow: hidden;
-    
+
         // Elegant glow effect on hover
     &:hover {
         background: linear-gradient(to right, #b8a4d1, #6fb8e3) !important; // Slightly deeper gradient
@@ -20,7 +20,7 @@
         transform: scale(1.1); // Slight zoom effect
         box-shadow: 0 0 12px rgba(136, 96, 208, 0.6), 0 0 18px rgba(132, 206, 235, 0.4); // Soft glow in matching colors
       }
-  
+
       // Subtle click effect
       &:active {
         background: linear-gradient(to right, #a78cc6, #5ea5d6) !important;
@@ -28,7 +28,7 @@
         box-shadow: 0 0 10px rgba(112, 72, 164, 0.8); // Slight glow when clicked
         transform: scale(1.05);
       }
-  
+
       // Cool animated light reflection effect
       &::after {
         content: "";
@@ -40,12 +40,12 @@
         background: rgba(255, 255, 255, 0.15);
         transition: left 0.4s ease-in-out;
       }
-  
+
       &:hover::after {
         left: 100%;
       }
     }
-    
+
         // Active button styling (e.g., "Month" button)
         .fc-button-active {
         background: linear-gradient(to right, #d1c1e4, #84CEEB) !important;
@@ -53,44 +53,89 @@
         font-weight: bold;
         }
   }
-  
+
   // FullCalendar Table Styling
 .fc {
-    background: white !important; // Matches button gradient
-    border-radius: 10px; // Rounded edges for a soft look
-    padding: 10px;
-  }
-  
-  // Header Row (Days of the Week)
-  .fc-scrollgrid-section-header th {
-    background: white !important; // Subtle gradient
-    color: white !important;
-    border-bottom: 2px solid #8860D0 !important; // Adds a purple divider line
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(209, 193, 228, 0.2);
+}
+
+// Header Row (Days of the Week)
+.fc-scrollgrid-section-header th {
+    background: linear-gradient(to right, rgba(209, 193, 228, 0.1), rgba(132, 206, 235, 0.1)) !important;
+    color: #4a5568 !important;
+    border-bottom: 2px solid rgba(136, 96, 208, 0.3) !important;
     text-align: center;
-    font-size: 16px;
-    font-weight: lighter;
-  }
-  
-  // Calendar Cells (Days)
-  .fc-daygrid-day {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 0 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+// Calendar Cells (Days)
+.fc-daygrid-day {
     background: white !important;
-    border: 1px solid rgba(136, 96, 208, 0.2) !important;
-    transition: background 0.4s ease-in-out, transform 0.2s ease-in-out;
+    border: 1px solid rgba(136, 96, 208, 0.1) !important;
+    transition: all 0.3s ease-in-out;
     position: relative;
-  }
-  
-  // Today's Date Highlight
-  .fc-day-today {
-    background: rgba(132, 206, 235, 0.3) !important; // Light blue highlight
-    border: 2px solid #5ea5d6 !important; // Slightly darker blue border
-    font-weight: bold;
-  }
-  
-  // Event Styling
-  .fc-event {
-    background: linear-gradient(to right, #ff6f61, #ffb88c) !important; // Soft red-orange for contrast
-    color: white !important;
-    border-radius: 5px;
-    border: none;
-    padding: 5px;
-  }
+    cursor: pointer;
+
+    .fc-daygrid-day-number {
+        color: #2d3748;
+        font-weight: 500;
+        padding: 8px;
+    }
+
+    &:hover {
+        background: rgba(209, 193, 228, 0.1) !important;
+        transform: scale(1.02);
+        z-index: 1;
+        box-shadow: 0 4px 12px rgba(132, 206, 235, 0.15);
+    }
+}
+
+// Today's Date Highlight
+.fc-day-today {
+    background: linear-gradient(135deg, rgba(209, 193, 228, 0.2), rgba(132, 206, 235, 0.2)) !important;
+    border: 1px solid rgba(132, 206, 235, 0.4) !important;
+
+    .fc-daygrid-day-number {
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(209, 193, 228, 0.3), rgba(132, 206, 235, 0.3)) !important;
+    }
+}
+
+// Event Styling
+.fc-event {
+    background: linear-gradient(to right, #d1c1e4, #84CEEB) !important;
+    color: #2d3748 !important;
+    border-radius: 6px;
+    border: none !important;
+    padding: 4px 8px;
+    font-size: 0.9em;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(132, 206, 235, 0.2);
+    }
+}
+
+// Other month days
+.fc-day-other {
+    background: rgba(249, 250, 251, 0.5) !important;
+
+    .fc-daygrid-day-number {
+        color: #a0aec0;
+    }
+}

@@ -5,6 +5,13 @@ export class CalendarController {
         const calendar = new FullCalendar.Calendar(calendarEl, {
             defaultView: 'dayGridMonth',
             editable: true,
+            locale: 'de',
+            buttonText: {
+                today: 'Heute',
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag'
+            },
             eventSources: [
                 {
                     url: '/fc-load-events',
@@ -22,7 +29,7 @@ export class CalendarController {
                 center: 'title',
                 end: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            timeZone: 'UTC',
+            timeZone: 'Europe/Berlin',
             height: 750,
 
             eventMouseEnter: function(mouseEnterInfo) {
