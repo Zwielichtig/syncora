@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Appointment;
 use App\Entity\Category;
 use App\Entity\PinType;
+use App\Entity\Pin;
+use App\Entity\ToDoEntry;
 use App\Entity\UserToCategory;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,6 +32,8 @@ class AjaxController extends BaseController
             $input = json_decode(file_get_contents('php://input'), true);
 
             $function = $input['function'];
+            
+            
 
             switch ($function) {
                 case 'upload-file':
@@ -49,9 +54,14 @@ class AjaxController extends BaseController
                 case 'get-user-categories':
                     $response = AjaxController::getUserCategories();
                     break;   
+                case 'get-calendar-datetimes':
+                    $response = AjaxController::getCalendarDatetimes();
+                    break;
+
             }
+            // $response = AjaxController::getUserCategories();
         } catch (Exception $e) {
-            $response->setData($e);
+            return new Response($e, 500);
         }
             
         return new Response($response->getData(), $response->getResponseCode());
@@ -105,10 +115,10 @@ class AjaxController extends BaseController
     function getUserCategories() : AJAXResponse
     {
         $response = new AJAXResponse();
-        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findAll();
-        $response->setSuccesful();
-        $response->setData($userToCategories);
-        return $response;
+        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy([
+            'user'=> $_SESSION['user']['id']
+        ]);
+
 
         $data = [];
         foreach ($userToCategories as $userToCategory) {
@@ -128,7 +138,7 @@ class AjaxController extends BaseController
     {
         $response = new AJAXResponse();
         $categories = $entityManager->getRepository(UserToCategory::class)->findBy([
-            'user'=> $_SESSION['user']
+            'user'=> $_SESSION['user']['id']
         ]);
         $data = [];
         foreach ($categories as $category) {
@@ -162,6 +172,55 @@ class AjaxController extends BaseController
         return $response;
     } 
 
+
+    function getCalendarDatetimes() {
+        $response = new AJAXResponse();
+        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy([
+            'user'=> $_SESSION['user']['id']
+        ]);
+
+
+        $data = [];
+        foreach ($userToCategories as $userToCategory) {
+
+            $category = $userToCategory->getCategory();
+            
+            $pins = $category->getPins();
+            foreach ($pins as $pin) {
+                if ($pin->getType()->getId() == 3) {
+                    //To-Do
+                    $entries = $this->entityManager->getRepository(ToDoEntry::class)->findBy([
+                        'pin'=> $pin->getId()
+                    ]);
+
+                    foreach($entries as $entry) {
+                        if ($entry->getDatetime()) {
+                            $data[] = [
+                                'title'=> $pin->getTitle(),
+                                'datetime' => $entry->getDatetime()
+                            ];
+                        }
+                    }
+
+
+                } else if ($pin->getType()->getId() == 4) {
+                    $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
+                        'pin'=> $pin->getId()
+                    ]);
+
+                    $data[] = [
+                        'title'=> $pin->getTitle(),
+                        'datetime' => $appointment->getDatetime()
+                    ];
+
+                }
+            }
+    
+        }
+        $response->setData($data);
+        $response->setSuccesful();
+        return $response;
+    }
 
 }
 
