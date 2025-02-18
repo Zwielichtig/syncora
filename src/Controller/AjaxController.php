@@ -69,6 +69,11 @@ class AjaxController extends BaseController
                     break;
                 case 'get-user-pins':
                     $response = AjaxController::getUserPins();
+                    break;
+                case 'update-user-pins':
+                    $response = AjaxController::updateUserPins($input['data']);
+                    break;
+
 
             }
             // $response = AjaxController::getUserCategories();
@@ -219,7 +224,7 @@ class AjaxController extends BaseController
                     'height' => $pin->getHeight()
                 ];
 
-
+                $pinContent = [];
                 switch ($pin->getType()->getId()) {
 
                     case 1:
@@ -228,7 +233,8 @@ class AjaxController extends BaseController
                             'pin'=> $pin->getId()
                         ]);
 
-                        $pinData['content'] = $note->getContent();
+                        $pinContent['id'] = $note->getId();
+                        $pinContent['content'] = $note->getContent();
                         break;
 
                     case 2:
@@ -236,8 +242,8 @@ class AjaxController extends BaseController
                         $image = $this->entityManager->getRepository(Image::class)->findOneBy([
                             'pin'=> $pin->getId()
                         ]);
-
-                        $pinData['filePath'] = $image->getFilePath();
+                        $pinContent['id'] = $image->getId();
+                        $pinContent['filePath'] = $image->getFilePath();
                         break;
                     case 3:
                         //ToDo
@@ -248,6 +254,7 @@ class AjaxController extends BaseController
                         $entries = [];
                         foreach ($toDoEntries as $entry) {
                             $entries[] = [
+                                'id' => $entry->getId(),
                                 'row' => $entry->getRow(),
                                 'datetime' => $entry->getDatetime(),
                                 'content' => $entry->getContent(),
@@ -255,7 +262,7 @@ class AjaxController extends BaseController
                         }
 
 
-                        $pinData['entries'] = $entries;
+                        $pinContent['entries'] = $entries;
                         break;
                     case 4:
                         //Appointment
@@ -263,10 +270,12 @@ class AjaxController extends BaseController
                             'pin'=> $pin->getId()
                         ]);
 
-                        $pinData['datetime'] = $appointment->getDatetime();
+                        $pinContent['id'] = $appointment->getId();
+                        $pinContent['datetime'] = $appointment->getDatetime();
                         break;
 
                 }
+                $pinData['pinContent'] = $pinContent;
                 $data[] = $pinData;
             }
 
@@ -274,6 +283,95 @@ class AjaxController extends BaseController
         $response->setData($data);
         $response->setSuccesful();
         return $response;
+    }
+
+    function updateUserPins($input)
+    {
+        $response = new AJAXResponse();
+
+        foreach ($input as $pinData) {
+
+            if($pinData['id'] != null) {
+                $pin = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
+            } else {
+                $pin = new Pin();
+            }
+            $category = $this->entityManager->getRepository(Category::class)->find($pinData['category']);
+            $pin->setCategory($category);
+            $pin->setTitle($pinData['title']);
+            $pin->setPosX($pinData['posX']);
+            $pin->setPosY($pinData['posY']);
+            $pin->setWidth($pinData['width']);
+            $pin->setHeight($pinData['height']);
+
+            $pinContent = $pinData['pinContent'];
+            switch ($pinData['type']) {
+                case 1:
+                    //Notiz
+                    if($pinContent['id'] != null) {
+                        $note = $this->entityManager->getRepository(Note::class)->find($pinContent['id']);
+                    } else {
+                        $note = new Note();
+                    }
+                    $note->setContent($pinContent['content']);
+                    if($pinContent['id'] == null) {
+                        $this->entityManager->persist($note);
+                    }
+
+                    break;
+                case 2:
+                    //Image
+                    if($pinContent['id'] != null) {
+                        $image = $this->entityManager->getRepository(Image::class)->find($pinContent['id']);
+                    } else {
+                        $image = new Image();
+                    }
+                    $image->setFilePath($pinContent['filePath']);
+                    if($pinContent['id'] == null) {
+                        $this->entityManager->persist($image);
+                    }
+
+                    break;
+                case 3:
+                    //ToDo
+                    foreach($pinContent['entries'] as $entryContent) {
+                        if($entryContent['id'] != null) {
+                            $entry = $this->entityManager->getRepository(ToDoEntry::class)->find($entryContent['id']);
+                        } else {
+                            $entry = new ToDoEntry();
+                        }
+                        $entry->setRow($entryContent['row']);
+                        $entry->setContent($entryContent['content']);
+                        $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $entryContent['datetime']);
+                        $entry->setDatetime($datetime);
+                        $entry->setChecked($entryContent['checked']);
+                        if($entryContent['id'] == null) {
+                            $this->entityManager->persist($entry);
+                        }
+                    }
+
+                    break;
+                case 4:
+                    //Appointment
+                    if($pinContent['id'] != null) {
+                        $appointment = $this->entityManager->getRepository(Appointment::class)->find($pinContent['id']);
+                    } else {
+                        $appointment = new Appointment();
+                    }
+                    $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $pinContent['datetime']);
+                    $appointment->setDatetime($datetime);
+                    if($pinContent['id'] == null) {
+                        $this->entityManager->persist($appointment);
+                    }
+                    break;
+
+            }
+            $this->entityManager->flush();
+        }
+        $response->setSuccesful();
+
+        return $response;
+
     }
 
 

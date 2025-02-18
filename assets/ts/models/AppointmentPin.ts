@@ -5,6 +5,7 @@ import { PinType } from "./PinType";
 
 export class AppointmentPin extends Pin {
     
+    contentId: number
     datetime: Date
 
     public static instances: AppointmentPin[] = []
@@ -26,14 +27,16 @@ export class AppointmentPin extends Pin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
         
-        const datetime = new Date(data.datetime['date'])
-        const pin = new AppointmentPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, datetime)
+        const datetime = new Date(data['pinContent']['datetime']['date'])
+        const pin = new AppointmentPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data['pinContent']['id'], datetime)
+        pin.saved = true;
         this.instances.push(pin)
         return pin
     }
 
-    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, datetime: Date) {
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId:number, datetime: Date) {
         super(id, type, category, title, posX, posY, width, height)
+        this.contentId = contentId
         this.datetime = datetime
     }
     
@@ -79,6 +82,7 @@ export class AppointmentPin extends Pin {
 
     public getPinContentData(): Object {
         const data = {
+            id: this.contentId,
             datetime: this.datetime.toISOString()
         }
         return data

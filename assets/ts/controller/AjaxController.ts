@@ -127,15 +127,15 @@ export class AjaxController {
 		return []
 	}
 
-	static async updatePins(pins: Pin[]) {
+	static async updateUserPins(pins: Pin[]) {
 		try {
-			let pinData :Array<Object> = []
+			let data :Array<Object> = []
 			pins.forEach(pin => {
-				pinData.push(pin.getPinContentData())
+				data.push(pin.getPinData())
 			});
 			var body = {
-				function:'update-notes',
-				data: pinData
+				function:'update-user-pins',
+				data: data
 			};
 
 			const response = await this.fetchData(body)
@@ -163,6 +163,7 @@ export class AjaxController {
 			//TODO Error Handling
 		}
 	}
+
 
 	static async getCalendarDatetimes() {
 		try {

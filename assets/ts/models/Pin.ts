@@ -23,7 +23,9 @@ export abstract class Pin {
     titleSpan : HTMLSpanElement
     categoryIcon: HTMLDivElement
 
-    static instances : Pin[] =[]
+    saved : boolean
+
+    static instances : Pin[]=[]
 
     private dragStartX: number = 0;
     private dragStartY: number = 0;
@@ -50,6 +52,7 @@ export abstract class Pin {
         this.height = height
 
         this.isDragging = false
+        this.saved = false;
         
         Pin.instances.push(this)
     }
@@ -150,6 +153,7 @@ export abstract class Pin {
         const titelInput = this.editorModal.querySelector('.pin-title-input') as HTMLInputElement
         titelInput.value = this.title
         titelInput.addEventListener('change', e => {
+            this.setSaved(false)
             this.onTitleChange(e)
         })
 
@@ -165,6 +169,7 @@ export abstract class Pin {
             categorySelect.appendChild(option)
         }
         categorySelect.addEventListener('change', e => {
+            this.setSaved(false)
             this.onCategoryChange(e)
         })
 
@@ -191,6 +196,7 @@ export abstract class Pin {
     }
 
     private handleDragStart(event: MouseEvent) {
+        this.setSaved(false)
         if (event.button !== 0) return; // Only left mouse button
 
         this.isDragging = true;
@@ -267,6 +273,7 @@ export abstract class Pin {
     }
 
     private handleResizeStart(event: MouseEvent) {
+        this.setSaved(false)
         this.isResizing = true;
         this.resizeStartX = event.clientX;
         this.resizeStartY = event.clientY;
@@ -307,20 +314,25 @@ export abstract class Pin {
         }
     }
 
+    protected setSaved(saved = false) {
+        this.saved = saved
+    }
+
     public getPinData() : Object {
-        const data = {
+        var data : Record<string, any> = {
             id: this.id,
-            category: this.category.name,
+            category: this.category.id,
             type: this.type.id,
             title: this.title,
             posX: this.posX,
             posY: this.posY,
             width: this.width,
             height: this.height,
-            pin_content: this.getPinContentData()
+            pinContent: this.getPinContentData()
         }
+
         return data
     }
 
-    public abstract getPinContentData():Object;
+    protected abstract getPinContentData():Object;
 }

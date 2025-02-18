@@ -65,20 +65,25 @@ export class PinController {
 
     private static async displayPins() {
         console.log(Pin.instances)
-        console.log('HALLLOOOOOO')
         Pin.instances.forEach(pin => {
             pin.buildPin()
         });
     }
 
-    private static getPins() : Pin[] {
-        return PinController.pins;
+    public static async saveAll() {
+        var pins:Pin[] = []
+
+        Pin.instances.forEach(pin => {
+            if (!pin.saved) {
+                pins.push(pin)
+            }
+        });
+        if (pins) {
+            AjaxController.updateUserPins(pins)
+        }
+        
+
     }
-
-    private static createPin(pinTypeId: number) {
-
-    }
-
 
 
 }
