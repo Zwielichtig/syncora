@@ -13,7 +13,7 @@
     transition: all 0.4s ease-in-out;
     position: relative;
     overflow: hidden;
-  
+
     // Elegant glow effect on hover
     &:hover {
       background: rgba(136, 96, 208, 0.2) !important; // Slight background visibility on hover
@@ -21,7 +21,7 @@
       transform: scale(1.1); // Slight zoom effect
       box-shadow: 0 0 12px rgba(136, 96, 208, 0.6), 0 0 18px rgba(132, 206, 235, 0.4); // Soft glow effect
     }
-  
+
     // Subtle click effect
     &:active {
       background: rgba(112, 72, 164, 0.3) !important; // Slightly darker on click
@@ -29,7 +29,7 @@
       box-shadow: 0 0 10px rgba(112, 72, 164, 0.8); // Glow when clicked
       transform: scale(1.05);
     }
-  
+
     // Cool animated light reflection effect
     &::after {
       content: "";
@@ -41,7 +41,7 @@
       background: rgba(255, 255, 255, 0.15);
       transition: left 0.4s ease-in-out;
     }
-  
+
     &:hover::after {
       left: 100%;
     }
@@ -251,4 +251,256 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.categories-list {
+  .category-items {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(209, 193, 228, 0.1);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(136, 96, 208, 0.2);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(136, 96, 208, 0.3);
+      }
+    }
+  }
+
+  .category-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(209, 193, 228, 0.05);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(209, 193, 228, 0.1);
+    }
+
+    .category-color {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      margin-right: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-name {
+      flex-grow: 1;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .category-delete {
+      color: #dc3545;
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #c82333;
+      }
+    }
+
+    &:hover .category-delete {
+      opacity: 1;
+    }
+  }
+}
+
+.new-category-form {
+  border-top: 1px solid rgba(136, 96, 208, 0.1);
+  padding-top: 1.5rem;
+
+  .form-control-color {
+    height: 38px;
+    padding: 0.375rem;
+    cursor: pointer;
+  }
+}
+
+// Update the modal styles
+#categoriesModal {
+    .modal-dialog {
+        max-width: 600px;
+        margin: 1.75rem auto;
+        transform: translateY(-20px);
+        opacity: 0;
+        transition: all 0.3s ease-out;
+    }
+
+    &.show .modal-dialog {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .modal-content {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 16px;
+        border: 1px solid rgba(209, 193, 228, 0.3);
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            0 2px 8px rgba(132, 206, 235, 0.1);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, rgba(209, 193, 228, 0.15), rgba(132, 206, 235, 0.15));
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(136, 96, 208, 0.15);
+
+        .modal-title {
+            font-size: 1.25rem;
+            background: linear-gradient(to right, #8860D0, #5B87DA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            font-size: 1.5rem;
+            opacity: 0.8;
+            padding: 0.5rem;
+            margin: -0.5rem -0.5rem -0.5rem auto;
+            background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            border: 0;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.95));
+
+        .categories-list {
+            .category-item {
+                background: linear-gradient(to right, rgba(209, 193, 228, 0.08), rgba(132, 206, 235, 0.08));
+                border: 1px solid rgba(136, 96, 208, 0.15);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+                &:hover {
+                    background: linear-gradient(to right, rgba(209, 193, 228, 0.15), rgba(132, 206, 235, 0.15));
+                    transform: translateX(4px);
+                    box-shadow: 0 4px 8px rgba(132, 206, 235, 0.1);
+                }
+
+                .category-color {
+                    box-shadow:
+                        0 2px 4px rgba(0, 0, 0, 0.1),
+                        0 0 0 2px rgba(255, 255, 255, 0.8);
+                }
+            }
+        }
+
+        .new-category-form {
+            background: linear-gradient(135deg, rgba(209, 193, 228, 0.05), rgba(132, 206, 235, 0.05));
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            border: 1px solid rgba(136, 96, 208, 0.1);
+
+            h6 {
+                background: linear-gradient(to right, #8860D0, #5B87DA);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-weight: 600;
+                margin-bottom: 1.25rem;
+            }
+
+            .btn-primary {
+                background: linear-gradient(to right, #d1c1e4, #84CEEB);
+                border: 1px solid rgba(136, 96, 208, 0.3);
+                color: #4a5568;
+                font-weight: 500;
+                padding: 0.475rem 0.75rem;
+                height: 38px;
+                font-size: 1rem;
+                line-height: 1.2;
+                transition: all 0.2s ease;
+                border-radius: 6px;
+                position: relative;
+                overflow: hidden;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 0;
+                    height: 0;
+                    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    transition: all 0.3s ease;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    color: #2d3748;
+
+                    &::before {
+                        width: 120px;
+                        height: 120px;
+                    }
+                }
+
+                &:active {
+                    animation: buttonClick 0.6s ease forwards;
+                }
+
+                i {
+                    display: none;
+                }
+            }
+
+            @keyframes buttonClick {
+                0% {
+                    transform: scale(1);
+                    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+                }
+                40% {
+                    transform: scale(0.96);
+                    background: linear-gradient(to right, #c4b2d8, #75b9d6);
+                }
+                100% {
+                    transform: scale(1);
+                    background: linear-gradient(to right, #d1c1e4, #84CEEB);
+                }
+            }
+        }
+    }
+}
+
+// Modal backdrop and animation
+.modal-backdrop {
+    backdrop-filter: blur(8px);
+    background: rgba(45, 55, 72, 0.4);
 }

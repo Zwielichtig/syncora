@@ -93,14 +93,39 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Kategorie erstellen</h5>
+        <h5 class="modal-title">Kategorien</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <input type="text" class="form-control" placeholder="Kategorie Name">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Erstellen</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+        <!-- Category List -->
+        <div class="categories-list mb-4">
+          <h6 class="mb-3">Vorhandene Kategorien</h6>
+          <div class="category-items">
+            <!-- Categories will be inserted here by JavaScript -->
+          </div>
+        </div>
+
+        <!-- New Category Form -->
+        <div class="new-category-form">
+          <h6 class="mb-3">Neue Kategorie erstellen</h6>
+          <form id="categoryForm" onsubmit="return false;">
+            <div class="row align-items-end">
+              <div class="col-md-5 mb-3">
+                <label for="categoryName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="categoryName" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="categoryColor" class="form-label">Farbe</label>
+                <input type="color" class="form-control form-control-color w-100" id="categoryColor" value="#d1c1e4">
+              </div>
+              <div class="col-md-3 mb-3">
+                <button type="button" class="btn btn-primary w-100" id="createCategoryBtn">
+                  <i class="fas fa-plus me-2"></i>Erstellen
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

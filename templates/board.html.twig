@@ -1,17 +1,22 @@
 {% extends "base.html.twig" %}
 
 {% block title %}Board{% endblock %}
-{# {% block pageType %}homepage{% endblock %} #}
-{% block pageType %}login{% endblock %}
-{% block body %}
-    {% if user == null %}
-        {{ include('./partials/login.html.twig') }}
+
+{% block pageType %}
+    {% if user is null %}
+        login
     {% else %}
-        {% if user.verified == false %}
-            {{ include ('./partials/userMessage.html.twig') }}
-        {% else %}
-            {{ include('partials/navigation.html.twig') }}
-        {% endif %}
+        navigation
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {% if user is null %}
+        {% include './partials/login.html.twig' %}
+    {% elseif not user.verified %}
+        {% include './partials/userMessage.html.twig' %}
+    {% else %}
+        {% include 'partials/navigation.html.twig' %}
     {% endif %}
 {% endblock %}
 
