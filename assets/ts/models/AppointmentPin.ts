@@ -7,7 +7,7 @@ export class AppointmentPin extends Pin {
     
     datetime: Date
 
-    public static instances: AppointmentPin[]
+    public static instances: AppointmentPin[] = []
 
     datetimeSpan: HTMLSpanElement
 
@@ -22,10 +22,11 @@ export class AppointmentPin extends Pin {
         return null;
     }
 
-    public static initImagePinInstance(data: any) : AppointmentPin {
+    public static initAppointmentPinInstance(data: any) : AppointmentPin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const datetime = new Date(data.datetime)
+        
+        const datetime = new Date(data.datetime['date'])
         const pin = new AppointmentPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, datetime)
         this.instances.push(pin)
         return pin

@@ -8,7 +8,7 @@ export class ImagePin extends Pin{
     imagePath: string
     image: HTMLImageElement
 
-    public static instances: ImagePin[]
+    public static instances: ImagePin[] = []
 
     editorContent : HTMLDivElement
 
@@ -24,7 +24,7 @@ export class ImagePin extends Pin{
     public static initImagePinInstance(data: any) : ImagePin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const pin = new ImagePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.image_path)
+        const pin = new ImagePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.filePath)
         this.instances.push(pin)
         return pin
     }

@@ -17,8 +17,10 @@ export class ToDoEntry {
 
 
     public static initToDoEntryInstance(data: any) : ToDoEntry { 
-        const datetime = new Date(data.datetime)
-        return new ToDoEntry(data.id, data.row, datetime, data.checked, data.content)
+
+        const datetime = new Date(data.datetime['date'])
+        //TODO checked
+        return new ToDoEntry(data.id, data.row, datetime, false, data.content)
     }
 
     constructor(id: number, row: number, datetime: Date, checked: boolean, content: string) {

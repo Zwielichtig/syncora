@@ -8,7 +8,7 @@ export class ToDoPin extends Pin {
     entries: ToDoEntry[]
 
 
-    public static instances: ToDoPin[]
+    public static instances: ToDoPin[] = []
 
     pinContainer: HTMLDivElement;
 
@@ -27,7 +27,7 @@ export class ToDoPin extends Pin {
         const category = Category.getCategoryInstance(data.category)
         const entries = []
         for (const entry of data.entries) {
-            entries.push(ToDoEntry.initToDoEntryInstance(data.entries))
+            entries.push(ToDoEntry.initToDoEntryInstance(entry))
         }
         const pin = new ToDoPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, entries)
         this.instances.push(pin)

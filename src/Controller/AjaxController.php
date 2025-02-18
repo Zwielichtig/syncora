@@ -6,6 +6,8 @@ use App\Entity\Appointment;
 use App\Entity\Category;
 use App\Entity\PinType;
 use App\Entity\Pin;
+use App\Entity\Note;
+use App\Entity\Image;
 use App\Entity\ToDoEntry;
 use App\Entity\UserToCategory;
 use Doctrine\ORM\EntityManager;
@@ -57,6 +59,8 @@ class AjaxController extends BaseController
                 case 'get-calendar-datetimes':
                     $response = AjaxController::getCalendarDatetimes();
                     break;
+                case 'get-user-pins':
+                    $response = AjaxController::getUserPins();
 
             }
             // $response = AjaxController::getUserCategories();
@@ -67,7 +71,7 @@ class AjaxController extends BaseController
         return new Response($response->getData(), $response->getResponseCode());
        
     }
-
+    
     function uploadFile(string $fileData, string $filePath): AJAXResponse 
     {
         $response = new AJAXResponse();
@@ -134,36 +138,80 @@ class AjaxController extends BaseController
         return $response;
     }
 
-    function getUserPins(EntityManagerInterface $entityManager, $userId): AJAXResponse 
+    function getUserPins(): AJAXResponse 
     {
         $response = new AJAXResponse();
-        $categories = $entityManager->getRepository(UserToCategory::class)->findBy([
+        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy([
             'user'=> $_SESSION['user']['id']
         ]);
+
+
         $data = [];
-        foreach ($categories as $category) {
+        foreach ($userToCategories as $userToCategory) {
+            $category = $userToCategory->getCategory();
             
-            
-            $pins = $category->getCategory()->getPins();
+            $pins = $category->getPins();
             foreach ($pins as $pin) {
-                $data[] = [
+                $pinData = [
                     'id' => $pin->getId(),
                     'title' => $pin->getTitle(),
                     'category' =>$pin->getCategory()->getId(),
+                    'type' => $pin->getType()->getId(),
+                    'posX' => $pin->getPosX(),
+                    'posY' => $pin->getPosY(),
+                    'width' => $pin->getWidth(),
+                    'height' => $pin->getHeight()
+                ]; 
+
+                
+                switch ($pin->getType()->getId()) {
                     
-                ];
-                // switch ($pin->getType()->getId()) {
+                    case 1:
+                        //Notiz
+                        $note = $this->entityManager->getRepository(Note::class)->findOneBy([
+                            'pin'=> $pin->getId()
+                        ]);
+                        
+                        $pinData['content'] = $note->getContent();
+                        break;
+
+                    case 2:
+                        //Image
+                        $image = $this->entityManager->getRepository(Image::class)->findOneBy([
+                            'pin'=> $pin->getId()
+                        ]);
+                        
+                        $pinData['filePath'] = $image->getFilePath();
+                        break;
+                    case 3:
+                        //ToDo
+                        $toDoEntries = $this->entityManager->getRepository(ToDoEntry::class)->findBy([
+                            'pin'=> $pin->getId()
+                        ]);
+
+                        $entries = [];
+                        foreach ($toDoEntries as $entry) {
+                            $entries[] = [
+                                'row' => $entry->getRow(),
+                                'datetime' => $entry->getDatetime(),
+                                'content' => $entry->getContent(),
+                            ];
+                        }
+
+                        
+                        $pinData['entries'] = $entries;
+                        break;
+                    case 4:
+                        //Appointment
+                        $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
+                            'pin'=> $pin->getId()
+                        ]);
+                        
+                        $pinData['datetime'] = $appointment->getDatetime();
+                        break;
                     
-                //     case 1:
-                //         //Note
-                //     case 2:
-                //         //Image
-                //     case 3:
-                //         //ToDo
-                //     case 4:
-                //         //Appointment
-                    
-                // }
+                }
+                $data[] = $pinData;
             }
             
         }
@@ -207,11 +255,12 @@ class AjaxController extends BaseController
                     $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
                         'pin'=> $pin->getId()
                     ]);
-
+                    
                     $data[] = [
                         'title'=> $pin->getTitle(),
                         'datetime' => $appointment->getDatetime()
                     ];
+
 
                 }
             }

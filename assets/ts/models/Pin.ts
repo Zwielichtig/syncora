@@ -23,6 +23,8 @@ export abstract class Pin {
     titleSpan : HTMLSpanElement
     categoryIcon: HTMLDivElement
 
+    static instances : Pin[] =[]
+
     private dragStartX: number = 0;
     private dragStartY: number = 0;
     private initialPinX: number = 0;
@@ -48,6 +50,8 @@ export abstract class Pin {
         this.height = height
 
         this.isDragging = false
+        
+        Pin.instances.push(this)
     }
 
     public async buildPin() {

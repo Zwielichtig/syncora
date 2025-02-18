@@ -65,48 +65,46 @@ export class AjaxController {
 		}
 	}
 
-	static async getPinTypes() {
+	static async getPinTypes() : Promise<Array<any>> {
 		try {
 			var body = {
 				function:'get-pin-types',
 			};
 
 			const response = await this.fetchData(body)
-			console.log(response)
+			return response
 		} catch (error) {
 			console.log(error)
 		}
+		return []
 	}
 
-	static async getUserCategories() {
+	static async getUserCategories() : Promise<Array<any>> {
 		try {
 			var body = {
 				function:'get-user-categories',
 			};
 
 			const response = await this.fetchData(body)
-			//TODO Response Handling
-			console.log(response)
+			return response
 		} catch (error) {
-			//TODO Error Handling
 			console.log(error)
 		}
+		return []
 	}
 
-	static async getUserPins(username:string) {
+	static async getUserPins(): Promise<Array<any>> {
 		try {
 			var body = {
-				function:'get-user-pins',
-				data: {
-					username: username
-				}
+				function:'get-user-pins'
 			};
 
 			const response = await this.fetchData(body)
-			//TODO Response Handling
+			return response
 		} catch (error) {
-			//TODO Error Handling
+			console.log(error)
 		}
+		return []
 	}
 
 	static async updatePins(pins: Pin[]) {
@@ -140,7 +138,7 @@ export class AjaxController {
 			};
 
 			const response = await this.fetchData(body)
-			//TODO Response Handling
+			
 		} catch (error) {
 			//TODO Error Handling
 		}
@@ -153,7 +151,7 @@ export class AjaxController {
 			};
 
 			const response = await this.fetchData(body)
-			console.log(response)
+			
 		} catch (error) {
 			console.log(error)
 		}

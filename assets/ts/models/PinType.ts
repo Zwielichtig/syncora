@@ -4,7 +4,7 @@ export class PinType {
     id: number
     name: string
 
-    public static instances: PinType[]
+    public static instances: PinType[] = []
 
 
 
@@ -18,8 +18,8 @@ export class PinType {
         return null;
     }
 
-    public static initPinTypeInstance(data: {'id':number, 'name':string}) : PinType{
-        const pinType = new PinType( data.id, data.name)
+    public static initPinTypeInstance(data: any) : PinType{
+        const pinType = new PinType(data['id'], data['name'])
         this.instances.push(pinType)
         return pinType
     }

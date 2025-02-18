@@ -16,6 +16,10 @@ AjaxController.getPinTypes()
 AjaxController.getUserCategories()
 // AjaxController.createCategory('neue Kategorie', '#0097A7')
 AjaxController.getCalendarDatetimes()
+AjaxController.getUserPins()
+
+PinController.init()
+
 
 
 // const pinType = new PinType(1, 'Notiz')

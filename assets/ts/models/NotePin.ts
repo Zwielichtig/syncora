@@ -6,7 +6,7 @@ import { PinType } from "./PinType";
 export class NotePin extends Pin{
     content: string
 
-    public static instances: NotePin[]
+    public static instances: NotePin[] = []
 
     contentArea : HTMLParagraphElement
     
