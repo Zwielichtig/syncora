@@ -146,6 +146,18 @@ export class AjaxController {
 		}
 	}
 
+	static async getCalendarDatetimes() {
+		try {
+			var body = {
+				function:'get-calendar-datetimes',
+			};
+
+			const response = await this.fetchData(body)
+			console.log(response)
+		} catch (error) {
+			console.log(error)
+		}
+	}
 	
 
 }
