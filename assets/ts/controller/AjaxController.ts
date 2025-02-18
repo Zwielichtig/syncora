@@ -2,10 +2,9 @@ import { Pin } from "../models/Pin";
 
 export class AjaxController {
 
-	public static AJAX_CONTROLLER_URL = '/ajax'
-
+	public static AJAX_CONTROLLER_URL = '/ajax';
     /**
-	 * 
+	 *
 	 * @param {string} endpoint - The relative URL of the API endpoint.
 	 * @param {string} [method='GET'] - The HTTP method to use (e.g., POST, GET, PUT).
 	 * @param {Object|null} [body=null] - The JSON payload to send with the request (optional).
@@ -13,7 +12,7 @@ export class AjaxController {
 	 * @throws {Error} - If the server returns a non-2xx HTTP status code or an invalid JSON response.
 	 */
     static async fetchData(body:any=null) {
-		const response = await fetch(AjaxController.AJAX_CONTROLLER_URL, 
+		const response = await fetch(AjaxController.AJAX_CONTROLLER_URL,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -54,7 +53,7 @@ export class AjaxController {
 				function:'create-category',
 				data: {
 					name: name,
-					color: color
+					color: color,
 				}
 			};
 
@@ -85,8 +84,29 @@ export class AjaxController {
 				function:'get-user-categories',
 			};
 
-			const response = await this.fetchData(body)
-			return response
+			const response = await this.fetchData(body);
+			return response;
+			//TODO Response Handling
+			// console.log(response)
+		} catch (error) {
+			//TODO Error Handling
+			console.log(error)
+		}
+	}
+
+	static async deleteCategory(id : number) {
+		try {
+			var body = {
+				function:'delete-categories',
+				data: {
+					categoryId: id
+				}
+			};
+
+			const response = await this.fetchData(body);
+			return response;
+			//TODO Response Handling
+			// console.log(response)
 		} catch (error) {
 			console.log(error)
 		}
@@ -138,7 +158,7 @@ export class AjaxController {
 			};
 
 			const response = await this.fetchData(body)
-			
+
 		} catch (error) {
 			//TODO Error Handling
 		}
@@ -151,11 +171,11 @@ export class AjaxController {
 			};
 
 			const response = await this.fetchData(body)
-			
+
 		} catch (error) {
 			console.log(error)
 		}
 	}
-	
+
 
 }

@@ -1,7 +1,9 @@
+import { AjaxController } from "./AjaxController";
+
 export class NavigationController {
     private categoryForm: HTMLFormElement;
     private categoryList: HTMLElement;
-    private categories: Array<{id: number, name: string, color: string}> = [];
+    private categories: any;
     private modal: HTMLElement;
 
     init() {
@@ -29,7 +31,7 @@ export class NavigationController {
 
             if (nameInput.value.trim()) {
                 try {
-                    await this.createCategory(nameInput.value, colorInput.value);
+                    await AjaxController.createCategory(nameInput.value, colorInput.value);
 
                     // Reset form
                     nameInput.value = '';
@@ -68,8 +70,8 @@ export class NavigationController {
 
     private async loadCategories() {
         try {
-            const response = await fetch('/api/categories');
-            this.categories = await response.json();
+            const data = await AjaxController.getUserCategories();
+            this.categories = data;
             this.renderCategories();
         } catch (error) {
             console.error('Error loading categories:', error);
@@ -82,26 +84,6 @@ export class NavigationController {
                     </div>
                 `;
             }
-        }
-    }
-
-    private async createCategory(name: string, color: string) {
-        try {
-            const response = await fetch('/api/categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, color }),
-            });
-
-            if (response.ok) {
-                const newCategory = await response.json();
-                this.categories.push(newCategory);
-                this.renderCategories();
-            }
-        } catch (error) {
-            console.error('Error creating category:', error);
         }
     }
 
@@ -139,7 +121,9 @@ export class NavigationController {
                 const categoryItem = (e.target as Element).closest('.category-item');
                 const categoryId = categoryItem?.getAttribute('data-id');
                 if (categoryId) {
-                    this.deleteCategory(parseInt(categoryId));
+                    if (AjaxController.deleteCategory(parseInt(categoryId))) {
+                        categoryItem?.remove();
+                    }
                 }
             });
         });

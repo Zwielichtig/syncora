@@ -1,3 +1,5 @@
+// Add type declaration at the top
+
 // TypeScript entry point
 import '../styles/app.scss';
 import 'bootstrap';
@@ -11,6 +13,7 @@ import { ToDoPin } from './models/ToDoPin';
 import { AppointmentPin } from './models/AppointmentPin';
 import { ImagePin } from './models/ImagePin';
 import { AjaxController } from './controller/AjaxController';
+
 
 AjaxController.getPinTypes()
 AjaxController.getUserCategories()
@@ -54,7 +57,7 @@ PinController.init()
 // imagePin.buildPin()
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const page = document.body.dataset.pageType;
     const ControllerClass = controllerMapper[page];
 
