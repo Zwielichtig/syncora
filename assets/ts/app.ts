@@ -16,6 +16,7 @@ import { AjaxController } from './controller/AjaxController';
 
 AjaxController.getPinTypes()
 AjaxController.getUserCategories()
+AjaxController.createCategory('neue Kategorie', '#0097A7')
 
 
 const pinType = new PinType(1, 'Notiz')

@@ -48,13 +48,13 @@ export class AjaxController {
 		}
 	}
 
-	static async createCategory(fileData: string, filePath: string) {
+	static async createCategory(name: string, color: string) {
 		try {
 			var body = {
-				function:'upload-file',
+				function:'create-category',
 				data: {
-					file_data: fileData,
-					filePath: filePath
+					name: name,
+					color: color
 				}
 			};
 
