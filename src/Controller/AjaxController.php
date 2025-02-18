@@ -9,6 +9,7 @@ use App\Entity\Pin;
 use App\Entity\Note;
 use App\Entity\Image;
 use App\Entity\ToDoEntry;
+use App\Entity\User;
 use App\Entity\UserToCategory;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,8 +35,8 @@ class AjaxController extends BaseController
             $input = json_decode(file_get_contents('php://input'), true);
 
             $function = $input['function'];
-            
-            
+
+
 
             switch ($function) {
                 case 'upload-file':
@@ -48,14 +49,21 @@ class AjaxController extends BaseController
                     $response = AjaxController::createCategory(
                         name: $input['data']['name'],
                         color: $input['data']['color']
+
                     );
                     break;
                 case 'get-pin-types':
                     $response = AjaxController::getPinTypes();
                     break;
+                case 'get-current-user':
+                    $response = AjaxController::getCurrentUser();
+                    break;
                 case 'get-user-categories':
                     $response = AjaxController::getUserCategories();
-                    break;   
+                    break;
+                case 'delete-categories':
+                    $response = AjaxController::deleteCategory($input['data']['categoryId']);
+                    break;
                 case 'get-calendar-datetimes':
                     $response = AjaxController::getCalendarDatetimes();
                     break;
@@ -67,12 +75,12 @@ class AjaxController extends BaseController
         } catch (Exception $e) {
             return new Response($e, 500);
         }
-            
+
         return new Response($response->getData(), $response->getResponseCode());
-       
+
     }
-    
-    function uploadFile(string $fileData, string $filePath): AJAXResponse 
+
+    function uploadFile(string $fileData, string $filePath): AJAXResponse
     {
         $response = new AJAXResponse();
         if (!move_uploaded_file($fileData, $filePath)) {
@@ -86,21 +94,57 @@ class AjaxController extends BaseController
 
     function createCategory(string $name, string $color) :AJAXResponse {
         $response = new AJAXResponse();
-        $newCategory = new Category();
-        $newCategory->setName($name);
-        $newCategory->setColor($color);
-        $this->entityManager->persist($newCategory);
-        $this->entityManager->flush();
 
-        $response->setSuccesful();
-        $response->setData([
-            'id' => $newCategory->getId()
-        ]);
+        if ($_SESSION['user']) {
+            $newCategory = new Category();
+            $newCategory->setName($name);
+            $newCategory->setColor($color);
+            $this->entityManager->persist($newCategory);
+            $this->entityManager->flush();
+
+            $userToCategory = new UserToCategory();
+            $userToCategory->setUser($this->entityManager->getRepository(User::class)->findOneBy(['id' => $_SESSION['user']['id']]));
+            $userToCategory->setCategory($this->entityManager->getRepository(Category::class)->findOneBy(['id' => $newCategory->getId()]));
+            $this->entityManager->persist($userToCategory);
+
+            $this->entityManager->flush();
+
+            $response->setSuccesful();
+
+            $response->setData([
+                'id' => $newCategory->getId()
+            ]);
+        }
+        return $response;
+    }
+
+    function deleteCategory(int $categoryId) :AJAXResponse {
+        $response = new AJAXResponse();
+
+        if ($_SESSION['user']) {
+            $categoryToUser = $this->entityManager->getRepository(UserToCategory::class)->findOneBy([
+                'user' => $_SESSION['user']['id'],
+                'category' => $categoryId
+            ]);
+            $this->entityManager->remove($categoryToUser);
+            $this->entityManager->flush();
+
+            $category = $this->entityManager->getRepository(Category::class)->findOneBy(['id' => $categoryId]);
+            $this->entityManager->remove($category);
+
+            $this->entityManager->flush();
+
+            $response->setSuccesful();
+            $response->setData(true);
+        } else {
+            $response->setSuccesful();
+            $response->setData(false);
+        }
         return $response;
     }
 
 
-    function getPinTypes(): AJAXResponse 
+    function getPinTypes(): AJAXResponse
     {
         $response = new AJAXResponse();
         $pinTypes = $this->entityManager->getRepository(PinType::class)->findAll();
@@ -116,15 +160,26 @@ class AjaxController extends BaseController
         return $response;
     }
 
+    function getCurrentUser() : AJAXResponse
+    {
+        $response = new AJAXResponse();
+
+        $data = [
+            'id' => $_SESSION['user']['id'],
+            'name' => $_SESSION['user']['userName'],
+            'email' => $_SESSION['user']['email']
+        ];
+        $response->setSuccesful();
+        $response->setData($data);
+        return $response;
+    }
+
     function getUserCategories() : AJAXResponse
     {
         $response = new AJAXResponse();
-        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy([
-            'user'=> $_SESSION['user']['id']
-        ]);
-
-
+        $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy(['user'=> $_SESSION['user']['id']]);
         $data = [];
+
         foreach ($userToCategories as $userToCategory) {
             $category = $userToCategory->getCategory();
             $data[] = [
@@ -133,12 +188,13 @@ class AjaxController extends BaseController
                 'color' => $category->getColor()
             ];
         }
+
         $response->setSuccesful();
         $response->setData($data);
         return $response;
     }
 
-    function getUserPins(): AJAXResponse 
+    function getUserPins(): AJAXResponse
     {
         $response = new AJAXResponse();
         $userToCategories = $this->entityManager->getRepository(UserToCategory::class)->findBy([
@@ -149,7 +205,7 @@ class AjaxController extends BaseController
         $data = [];
         foreach ($userToCategories as $userToCategory) {
             $category = $userToCategory->getCategory();
-            
+
             $pins = $category->getPins();
             foreach ($pins as $pin) {
                 $pinData = [
@@ -161,17 +217,17 @@ class AjaxController extends BaseController
                     'posY' => $pin->getPosY(),
                     'width' => $pin->getWidth(),
                     'height' => $pin->getHeight()
-                ]; 
+                ];
 
-                
+
                 switch ($pin->getType()->getId()) {
-                    
+
                     case 1:
                         //Notiz
                         $note = $this->entityManager->getRepository(Note::class)->findOneBy([
                             'pin'=> $pin->getId()
                         ]);
-                        
+
                         $pinData['content'] = $note->getContent();
                         break;
 
@@ -180,7 +236,7 @@ class AjaxController extends BaseController
                         $image = $this->entityManager->getRepository(Image::class)->findOneBy([
                             'pin'=> $pin->getId()
                         ]);
-                        
+
                         $pinData['filePath'] = $image->getFilePath();
                         break;
                     case 3:
@@ -198,7 +254,7 @@ class AjaxController extends BaseController
                             ];
                         }
 
-                        
+
                         $pinData['entries'] = $entries;
                         break;
                     case 4:
@@ -206,19 +262,19 @@ class AjaxController extends BaseController
                         $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
                             'pin'=> $pin->getId()
                         ]);
-                        
+
                         $pinData['datetime'] = $appointment->getDatetime();
                         break;
-                    
+
                 }
                 $data[] = $pinData;
             }
-            
+
         }
         $response->setData($data);
         $response->setSuccesful();
         return $response;
-    } 
+    }
 
 
     function getCalendarDatetimes() {
@@ -232,7 +288,7 @@ class AjaxController extends BaseController
         foreach ($userToCategories as $userToCategory) {
 
             $category = $userToCategory->getCategory();
-            
+
             $pins = $category->getPins();
             foreach ($pins as $pin) {
                 if ($pin->getType()->getId() == 3) {
@@ -255,7 +311,7 @@ class AjaxController extends BaseController
                     $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
                         'pin'=> $pin->getId()
                     ]);
-                    
+
                     $data[] = [
                         'title'=> $pin->getTitle(),
                         'datetime' => $appointment->getDatetime()
@@ -264,7 +320,7 @@ class AjaxController extends BaseController
 
                 }
             }
-    
+
         }
         $response->setData($data);
         $response->setSuccesful();
