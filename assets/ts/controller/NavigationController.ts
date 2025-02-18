@@ -5,6 +5,7 @@ export class NavigationController {
     private modal: HTMLElement;
 
     init() {
+        console.log('NavigationController initialized');
         this.categoryForm = document.getElementById('categoryForm') as HTMLFormElement;
         this.categoryList = document.querySelector('.category-items');
         this.modal = document.getElementById('categoriesModal');

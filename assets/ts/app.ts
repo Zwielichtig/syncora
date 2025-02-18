@@ -2,8 +2,6 @@
 import '../styles/app.scss';
 import 'bootstrap';
 import { controllerMapper } from './controllerMapper';
-import '../styles/pinboard.scss';
-import 'bootstrap';
 import { PinController } from './controller/PinController';
 import { Category } from './models/Category';
 import { NotePin } from './models/NotePin';
