@@ -40,4 +40,15 @@ class AppointmentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findBetweenDates(\DateTime $start, \DateTime $end): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.beginAt BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('a.beginAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
