@@ -2,13 +2,7 @@
 
 {% block title %}Board{% endblock %}
 
-{% block pageType %}
-    {% if user is null %}
-        login
-    {% else %}
-        navigation
-    {% endif %}
-{% endblock %}
+{% block pageType %}{% if user is null %}login{% else %}navigation{% endif %}{% endblock %}
 
 {% block body %}
     {% if user is null %}
