@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\UserToCategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: UserToCategoryRepository::class)]
+#[ORM\Table(name: 'user_to_category')]
 class UserToCategory
 {
     // #[ORM\Id]

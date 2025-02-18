@@ -2,7 +2,7 @@ import { Pin } from "../models/Pin";
 
 export class AjaxController {
 
-	public static AJAX_CONTROLLER_URL = ''
+	public static AJAX_CONTROLLER_URL = '/ajax'
 
     /**
 	 * 
@@ -34,7 +34,24 @@ export class AjaxController {
 	static async uploadFile(fileData: string, filePath: string) {
 		try {
 			var body = {
-				context:'upload-file',
+				function:'upload-file',
+				data: {
+					file_data: fileData,
+					filePath: filePath
+				}
+			};
+
+			const response = await this.fetchData(body)
+			//TODO Response Handling
+		} catch (error) {
+			//TODO Error Handling
+		}
+	}
+
+	static async createCategory(fileData: string, filePath: string) {
+		try {
+			var body = {
+				function:'upload-file',
 				data: {
 					file_data: fileData,
 					filePath: filePath
@@ -51,33 +68,35 @@ export class AjaxController {
 	static async getPinTypes() {
 		try {
 			var body = {
-				context:'get-pin-types',
+				function:'get-pin-types',
 			};
 
 			const response = await this.fetchData(body)
-			//TODO Response Handling
+			console.log(response)
 		} catch (error) {
-			//TODO Error Handling
+			console.log(error)
 		}
 	}
 
 	static async getUserCategories() {
 		try {
 			var body = {
-				context:'get-user-categories',
+				function:'get-user-categories',
 			};
 
 			const response = await this.fetchData(body)
 			//TODO Response Handling
+			console.log(response)
 		} catch (error) {
 			//TODO Error Handling
+			console.log(error)
 		}
 	}
 
 	static async getUserPins(username:string) {
 		try {
 			var body = {
-				context:'get-user-pins',
+				function:'get-user-pins',
 				data: {
 					username: username
 				}
@@ -97,7 +116,7 @@ export class AjaxController {
 				pinData.push(pin.getPinContentData())
 			});
 			var body = {
-				context:'update-notes',
+				function:'update-notes',
 				data: pinData
 			};
 
@@ -112,7 +131,7 @@ export class AjaxController {
 	static async updateCategory(id:number, name:string, color:string) {
 		try {
 			var body = {
-				context:'update-category',
+				function:'update-category',
 				data: {
 					id: id,
 					name: name,

@@ -12,7 +12,10 @@ import { ToDoEntry } from './models/ToDoEntry';
 import { ToDoPin } from './models/ToDoPin';
 import { AppointmentPin } from './models/AppointmentPin';
 import { ImagePin } from './models/ImagePin';
+import { AjaxController } from './controller/AjaxController';
 
+AjaxController.getPinTypes()
+AjaxController.getUserCategories()
 
 
 const pinType = new PinType(1, 'Notiz')

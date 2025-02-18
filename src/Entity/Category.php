@@ -18,9 +18,8 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Color $color = null;
+    #[ORM\Column(length: 10)]
+    private ?string $color = null;
 
     /**
      * @var Collection<int, Pin>
@@ -50,12 +49,12 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?Color
+    public function getColor(): ?string
     {
         return $this->color;
     }
 
-    public function setColor(?Color $color): static
+    public function setColor(string $color): static
     {
         $this->color = $color;
 
