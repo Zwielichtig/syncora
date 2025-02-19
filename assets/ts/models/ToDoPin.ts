@@ -7,6 +7,8 @@ import { ToDoEntry } from "./ToDoEntry";
 export class ToDoPin extends Pin {
     entries: ToDoEntry[]
 
+    contentId : number
+
 
     public static instances: ToDoPin[] = []
 
@@ -26,10 +28,11 @@ export class ToDoPin extends Pin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
         const entries = []
-        for (const entry of data.entries) {
+        for (const entry of data['pinContent']['entries']) {
             entries.push(ToDoEntry.initToDoEntryInstance(entry))
         }
         const pin = new ToDoPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, entries)
+        pin.saved = true;
         this.instances.push(pin)
         return pin
     }
@@ -37,6 +40,7 @@ export class ToDoPin extends Pin {
 
     constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, entries: ToDoEntry[]) {
         super(id, type, category, title, posX, posY, width, height)
+        this.contentId = id
         this.entries = entries
     }
 
@@ -95,6 +99,7 @@ export class ToDoPin extends Pin {
     }
 
     private addEntry () : ToDoEntry {
+        this.setSaved(false)
         let row = 1
         this.entries.forEach(entry => {
             if (entry.row > row) {
@@ -111,6 +116,7 @@ export class ToDoPin extends Pin {
     }
 
     private deleteEntry(row:number) {
+        this.setSaved(false)
         for (const [index, entry] of Object.entries(this.entries)) {
             if (entry.row == row) {
                 entry.entryContainer.remove()

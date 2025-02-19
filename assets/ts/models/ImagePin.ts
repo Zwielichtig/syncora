@@ -5,7 +5,8 @@ import { PinType } from './PinType';
 
 export class ImagePin extends Pin{
 
-    imagePath: string
+    contentId: number
+    filePath: string
     image: HTMLImageElement
 
     public static instances: ImagePin[] = []
@@ -24,25 +25,27 @@ export class ImagePin extends Pin{
     public static initImagePinInstance(data: any) : ImagePin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const pin = new ImagePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.filePath)
+        const pin = new ImagePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data['pinContent']['id'], data['pinContent']['filePath'])
         this.instances.push(pin)
+        pin.saved = true;
         return pin
     }
 
-    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, imagePath: string) {
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId: number, imagePath: string) {
         super(id, type, category, title, posX, posY, width, height)
-        this.imagePath = imagePath
+        this.contentId = contentId
+        this.filePath = imagePath
     }
 
     buildPinContent(): HTMLDivElement {
         const pinContent = document.createElement('div');
         pinContent.className = 'image-pin-content';
 
-        if (this.imagePath) {
+        if (this.filePath) {
             const imageContainer = document.createElement('div');
             imageContainer.className = 'image-container';
 
-            this.loadImage(this.imagePath)
+            this.loadImage(this.filePath)
                 .then(() => {
                     this.image.className = 'pin-image';
                     this.updateImageSize(); // Initial size
@@ -60,7 +63,7 @@ export class ImagePin extends Pin{
                         modal.className = 'image-modal';
                         modal.innerHTML = `
                             <div class="image-modal-content">
-                                <img src="${this.imagePath}" alt="${this.title}">
+                                <img src="${this.filePath}" alt="${this.title}">
                                 <button class="close-modal">&times;</button>
                             </div>
                         `;
@@ -128,6 +131,7 @@ export class ImagePin extends Pin{
     }
 
     private onImageInput(event:Event) {
+        this.setSaved(false)
         const imgFile = (event.target as HTMLInputElement).files[0]
 
         const reader = new FileReader();
@@ -139,6 +143,7 @@ export class ImagePin extends Pin{
     }
 
     private onImageDelete() {
+        this.setSaved(false)
 
     }
 
@@ -155,13 +160,14 @@ export class ImagePin extends Pin{
             }
 
             img.onerror = () => reject(new Error(`Fehler beim Laden des Bildes: ${url}`));
-            img.src = this.imagePath;
+            img.src = this.filePath;
         });
     }
 
     public getPinContentData(): Object {
         const data = {
-            filePath: this.imagePath
+            id: this.contentId,
+            filePath: this.filePath
         }
         return data
     }

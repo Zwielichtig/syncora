@@ -1,5 +1,7 @@
 // Add type declaration at the top
 
+// Add type declaration at the top
+
 // TypeScript entry point
 import '../styles/app.scss';
 import 'bootstrap';
@@ -14,15 +16,17 @@ import { AppointmentPin } from './models/AppointmentPin';
 import { ImagePin } from './models/ImagePin';
 import { AjaxController } from './controller/AjaxController';
 
-
 AjaxController.getPinTypes()
 AjaxController.getUserCategories()
 // AjaxController.createCategory('neue Kategorie', '#0097A7')
-AjaxController.getCalendarDatetimes()
-AjaxController.getUserPins()
+// AjaxController.getCalendarDatetimes()
+// AjaxController.getUserPins()
 
-PinController.init()
+PinController.init();
 
+(document.getElementById("saveAllBtn") as HTMLButtonElement).addEventListener('click', () => {
+    PinController.saveAll()
+})
 
 
 // const pinType = new PinType(1, 'Notiz')

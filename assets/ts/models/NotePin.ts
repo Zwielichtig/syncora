@@ -4,6 +4,7 @@ import { Pin } from "./Pin";
 import { PinType } from "./PinType";
 
 export class NotePin extends Pin{
+    contentId: number
     content: string
 
     public static instances: NotePin[] = []
@@ -23,14 +24,16 @@ export class NotePin extends Pin{
     public static initNotePinInstance(data: any) : NotePin {
         const type = PinType.getPinTypeInstance(data.type)
         const category = Category.getCategoryInstance(data.category)
-        const pin = new NotePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.content)
+        const pin = new NotePin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data['pinContent']['id'], data['pinContent']['content'])
         this.instances.push(pin)
+        pin.saved = true;
         return pin
     }
     
 
-    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, content: string) {
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId:number, content: string) {
         super(id, type, category, title, posX, posY, width, height)
+        this.contentId = contentId
         this.content = content
     }
 
@@ -65,12 +68,14 @@ export class NotePin extends Pin{
     }
 
     private onContentChange(event:Event) {
+        this.setSaved(false)
         this.content = (event.target as HTMLTextAreaElement).value
         this.contentArea.innerHTML = this.content
     }
 
     public getPinContentData(): Object {
         const data = {
+            id: this.contentId,
             content: this.content
         }
         return data
