@@ -25,16 +25,31 @@ export class AppointmentPin extends Pin {
         return null;
     }
 
-    public static initAppointmentPinInstance(data: any) : AppointmentPin {
-        const type = PinType.getPinTypeInstance(data.type)
-        const category = Category.getCategoryInstance(data.category)
+    public static initAppointmentPinInstance(data: any): AppointmentPin {
+        console.log('Initializing appointment with data:', data);
+        const type = PinType.getPinTypeInstance(data.type);
+        const category = Category.getCategoryInstance(data.category);
 
-        const beginAt = new Date(data['pinContent']['beginAt']['date'])
-        const endAt = new Date(data['pinContent']['endAt']['date'])
-        const pin = new AppointmentPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data['pinContent']['id'], beginAt, endAt)
+        // Parse dates from pinContent
+        const beginAt = data.pinContent?.beginAt ? new Date(data.pinContent.beginAt) : new Date();
+        const endAt = data.pinContent?.endAt ? new Date(data.pinContent.endAt) : new Date();
+
+        const pin = new AppointmentPin(
+            data.id,
+            type,
+            category,
+            data.title,
+            data.posX,
+            data.posY,
+            data.width,
+            data.height,
+            data.pinContent?.id || 0,
+            beginAt,
+            endAt
+        );
         pin.saved = true;
-        this.instances.push(pin)
-        return pin
+        this.instances.push(pin);
+        return pin;
     }
 
     constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId: number, beginAt?: Date, endAt?: Date) {

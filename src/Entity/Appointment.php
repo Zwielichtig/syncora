@@ -31,6 +31,14 @@ class Appointment extends Event
     #[ORM\Column(name: 'user_id')]
     protected int $userId;
 
+    public function __construct(Pin $pin, int $userId)
+    {
+        $this->pin = $pin;
+        $this->userId = $userId;
+        $this->beginAt = new \DateTime();
+        $this->endAt = new \DateTime('+1 hour');
+    }
+
     public function getId(): int
     {
         return $this->id;

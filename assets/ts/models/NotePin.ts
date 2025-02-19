@@ -6,11 +6,9 @@ import { PinType } from "./PinType";
 export class NotePin extends Pin{
     contentId: number
     content: string
+    contentArea: HTMLParagraphElement
 
     public static instances: NotePin[] = []
-
-    contentArea : HTMLParagraphElement
-
 
     public static getNotePinInstance(id: number): NotePin {
         for (const pin of this.instances) {
@@ -30,22 +28,30 @@ export class NotePin extends Pin{
         return pin
     }
 
-
     constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId:number, content: string) {
         super(id, type, category, title, posX, posY, width, height)
         this.contentId = contentId
         this.content = content
     }
 
+    public buildPinContent(): HTMLDivElement {
+        // console.log('Building note content for pin:', this.id);
+        // console.log('Initial content:', this.content);
 
-    buildPinContent(): HTMLDivElement {
-        const parser = new DOMParser()
-        const htmlNoteContent = parser.parseFromString(HTMLSnippets.NOTE_CONTENT, 'text/html')
-        const noteContainer = htmlNoteContent.querySelector('.note') as HTMLDivElement
-        this.contentArea =  noteContainer.querySelector('.note-content')
-        this.contentArea.innerHTML = this.content
+        const noteContent = document.createElement('div');
+        noteContent.className = 'note p-3';
 
-        return noteContainer
+        const contentP = document.createElement('p');
+        contentP.className = 'note-content mb-0';
+        contentP.textContent = this.content;
+
+        noteContent.appendChild(contentP);
+        this.contentArea = contentP;
+
+        // console.log('Built content element:', this.contentArea);
+        // console.log('Content text:', this.contentArea.textContent);
+
+        return noteContent;
     }
 
     buildEditorContent(): HTMLDivElement {
@@ -59,7 +65,7 @@ export class NotePin extends Pin{
             this.onContentChange(e)
         })
 
-        console.log(noteEditor)
+        // console.log(noteEditor)
         return noteEditor
     }
 
@@ -70,7 +76,7 @@ export class NotePin extends Pin{
     private onContentChange(event:Event) {
         this.setSaved(false)
         this.content = (event.target as HTMLTextAreaElement).value
-        this.contentArea.innerHTML = this.content
+        this.contentArea.textContent = this.content
     }
 
     public getPinContentData(): Object {
@@ -82,9 +88,37 @@ export class NotePin extends Pin{
     }
 
     protected updatePinContent(): void {
-        const noteContent = this.pinContainer.querySelector('.note-content');
-        if (noteContent) {
-            noteContent.textContent = this.content;
+        // console.log('NotePin updatePinContent called for pin:', this.id);
+        // console.log('Content at start of update:', this.content);
+
+        try {
+            // Get the pin body
+            const pinBody = this.pinContainer.querySelector('.pin-body');
+            if (!pinBody) {
+                throw new Error('Pin body not found');
+            }
+
+            // Create new content element
+            const noteContent = document.createElement('div');
+            noteContent.className = 'note p-3';
+
+            const contentP = document.createElement('p');
+            contentP.className = 'note-content mb-0';
+            contentP.textContent = this.content;
+
+            noteContent.appendChild(contentP);
+
+            // Clear and update
+            pinBody.innerHTML = '';
+            pinBody.appendChild(noteContent);
+
+            // Store reference
+            this.contentArea = contentP;
+
+            // console.log('Content element after update:', this.contentArea);
+            // console.log('Content text after update:', this.contentArea.textContent);
+        } catch (error) {
+            console.error('Error updating note content:', error);
         }
     }
 

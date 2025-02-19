@@ -2,7 +2,7 @@ import { AjaxController } from "../controller/AjaxController"
 import { HTMLSnippets } from "../ressources/HTMLSnippets"
 import { Category } from "./Category"
 import { PinType } from "./PinType"
-import { PinController } from "../controller/PinController"
+import { BoardController } from "../controller/BoardController"
 
 export abstract class Pin {
     id: number
@@ -59,80 +59,91 @@ export abstract class Pin {
     }
 
     public async buildPin() {
-        console.log('Building pin:', this.id);
-        this.buildEditorModal();
+        console.log('Building pin:', this.id, 'Type:', this.type.id);
+        try {
+            this.buildEditorModal();
 
-        const parser = new DOMParser();
-        const html = parser.parseFromString(HTMLSnippets.PIN, 'text/html');
-        this.pinContainer = html.querySelector('.pin');
-        this.pinContainer.id = 'pin' + this.id;
+            const parser = new DOMParser();
+            const html = parser.parseFromString(HTMLSnippets.PIN, 'text/html');
+            this.pinContainer = html.querySelector('.pin');
+            this.pinContainer.id = 'pin' + this.id;
 
-        //pin title
-        this.titleSpan = this.pinContainer.querySelector('.pin-title');
-        this.titleSpan.innerHTML = this.title;
+            //pin title
+            this.titleSpan = this.pinContainer.querySelector('.pin-title');
+            this.titleSpan.innerHTML = this.title;
 
-        //category icon
-        this.categoryIcon = this.pinContainer.querySelector('.category-icon');
-        this.categoryIcon.style.backgroundColor = this.category.color;
+            //category icon
+            this.categoryIcon = this.pinContainer.querySelector('.category-icon');
+            this.categoryIcon.style.backgroundColor = this.category.color;
 
-        // Initialize edit functionality
-        console.log('Setting up edit button for pin:', this.id);
-        const editIcon = this.pinContainer.querySelector('.edit-icon') as HTMLElement;
-        if (editIcon) {
-            console.log('Found edit icon for pin:', this.id);
-            editIcon.addEventListener('click', (e) => {
-                console.log('Edit icon clicked for pin:', this.id);
-                e.preventDefault();
-                e.stopPropagation();
-                PinController.editPin(this);
-            });
-        } else {
-            console.error('Edit icon not found for pin:', this.id);
-        }
-
-        //pin header
-        const pinHeader = this.pinContainer.querySelector('.pin-header')
-        const dragHandle = document.createElement('div');
-        dragHandle.className = 'drag-handle';
-        pinHeader.insertBefore(dragHandle, pinHeader.firstChild);
-
-        // Only attach drag events to the handle
-        dragHandle.addEventListener('mousedown', this.handleDragStart.bind(this));
-        document.addEventListener('mousemove', this.handleDrag.bind(this));
-        document.addEventListener('mouseup', this.handleDragEnd.bind(this));
-
-        //pin body
-        const pinBody = this.pinContainer.querySelector('.pin-body')
-        pinBody.appendChild(this.buildPinContent())
-
-        // Ensure the body has a minimum height for pins
-        document.body.style.minHeight = '100vh';
-        document.body.style.position = 'relative';
-
-        this.pinContainer.style.position = "absolute";
-        this.pinContainer.style.left = `${this.posX}px`;
-        this.pinContainer.style.top = `${this.posY}px`;
-        this.pinContainer.style.width = `${this.width}px`;
-        this.pinContainer.style.height = `${this.height}px`;
-
-        document.body.appendChild(this.pinContainer);
-        console.log('Pin built and added to DOM:', this.id);
-
-        // Add resize event listeners
-        this.pinContainer.addEventListener('mousedown', (e: MouseEvent) => {
-            const rect = this.pinContainer.getBoundingClientRect();
-            const isResizeArea = (
-                e.clientX > rect.right - 15 &&
-                e.clientY > rect.bottom - 15
-            );
-
-            if (isResizeArea) {
-                this.handleResizeStart(e);
+            // Initialize edit functionality
+            // console.log('Setting up edit button for pin:', this.id);
+            const editIcon = this.pinContainer.querySelector('.edit-icon') as HTMLElement;
+            if (editIcon) {
+                // console.log('Found edit icon for pin:', this.id);
+                editIcon.addEventListener('click', (e) => {
+                    // console.log('Edit icon clicked for pin:', this.id);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    BoardController.editPin(this);
+                });
+            } else {
+                console.error('Edit icon not found for pin:', this.id);
             }
-        });
 
-        document.addEventListener('mousemove', this.handleResize.bind(this));
-        document.addEventListener('mouseup', this.handleResizeEnd.bind(this));
+            //pin header
+            const pinHeader = this.pinContainer.querySelector('.pin-header')
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'drag-handle';
+            pinHeader.insertBefore(dragHandle, pinHeader.firstChild);
+
+            // Only attach drag events to the handle
+            dragHandle.addEventListener('mousedown', this.handleDragStart.bind(this));
+            document.addEventListener('mousemove', this.handleDrag.bind(this));
+            document.addEventListener('mouseup', this.handleDragEnd.bind(this));
+
+            //pin body
+            const pinContent = this.buildPinContent();
+            console.log('Built pin content:', pinContent);
+
+            const pinBody = this.pinContainer.querySelector('.pin-body');
+            if (pinBody) {
+                pinBody.appendChild(pinContent);
+            } else {
+                console.error('Pin body not found');
+            }
+
+            // Ensure the body has a minimum height for pins
+            document.body.style.minHeight = '100vh';
+            document.body.style.position = 'relative';
+
+            this.pinContainer.style.position = "absolute";
+            this.pinContainer.style.left = `${this.posX}px`;
+            this.pinContainer.style.top = `${this.posY}px`;
+            this.pinContainer.style.width = `${this.width}px`;
+            this.pinContainer.style.height = `${this.height}px`;
+
+            document.body.appendChild(this.pinContainer);
+            // console.log('Pin built and added to DOM:', this.id);
+
+            // Add resize event listeners
+            this.pinContainer.addEventListener('mousedown', (e: MouseEvent) => {
+                const rect = this.pinContainer.getBoundingClientRect();
+                const isResizeArea = (
+                    e.clientX > rect.right - 15 &&
+                    e.clientY > rect.bottom - 15
+                );
+
+                if (isResizeArea) {
+                    this.handleResizeStart(e);
+                }
+            });
+
+            document.addEventListener('mousemove', this.handleResize.bind(this));
+            document.addEventListener('mouseup', this.handleResizeEnd.bind(this));
+        } catch (error) {
+            console.error('Error building pin:', error);
+        }
     }
 
     private buildEditorModal() {
@@ -264,7 +275,8 @@ export abstract class Pin {
         // Save new position if dragging actually occurred
         if (this.posX !== this.initialPinX || this.posY !== this.initialPinY) {
             // Here you could add code to save the new position to your backend
-            console.log('Pin position updated:', { x: this.posX, y: this.posY });
+            BoardController.saveAll()
+            // console.log('Pin position updated:', { x: this.posX, y: this.posY });
         }
     }
 
@@ -316,12 +328,12 @@ export abstract class Pin {
 
         if (this.width !== this.initialWidth || this.height !== this.initialHeight) {
             // Here you could add code to save the new dimensions to your backend
-            console.log('Pin size updated:', { width: this.width, height: this.height });
+            // console.log('Pin size updated:', { width: this.width, height: this.height });
         }
     }
 
-    protected setSaved(saved = false) {
-        this.saved = saved
+    public setSaved(saved: boolean): void {
+        this.saved = saved;
     }
 
     public getPinData() : Object {
@@ -340,33 +352,49 @@ export abstract class Pin {
         return data
     }
 
-    protected abstract getPinContentData():Object;
+    public getPinContentData(): Object {
+        return {};
+    }
 
     protected addEditListener() {
-        console.log('Adding edit listener to pin:', this);
+        // console.log('Adding edit listener to pin:', this);
         try {
             this.pinContainer?.querySelector('.edit-icon')?.addEventListener('click', () => {
-                console.log('Edit icon clicked for pin:', this);
-                PinController.editPin(this);
+                // console.log('Edit icon clicked for pin:', this);
+                BoardController.editPin(this);
             });
         } catch (err) {
             console.error('Error adding edit listener:', err);
         }
     }
 
-    public updatePin() {
-        // Update title
-        if (this.titleSpan) {
-            this.titleSpan.innerHTML = this.title;
+    public updatePin(): void {
+        if (!this.pinContainer) {
+            console.error('Pin container not found');
+            return;
         }
 
-        // Update category color
-        if (this.categoryIcon) {
-            this.categoryIcon.style.backgroundColor = this.category.color;
-        }
+        // console.log('Starting pin update for pin:', this.id);
+        try {
+            // Update title
+            if (this.titleSpan) {
+                // console.log('Updating title to:', this.title);
+                this.titleSpan.innerHTML = this.title;
+            }
 
-        // Update content (to be implemented by child classes)
-        this.updatePinContent();
+            // Update category color
+            if (this.categoryIcon) {
+                // console.log('Updating category color to:', this.category.color);
+                this.categoryIcon.style.backgroundColor = this.category.color;
+            }
+
+            // Update content
+            // console.log('Updating pin content...');
+            this.updatePinContent();
+            // console.log('Pin update complete');
+        } catch (error) {
+            console.error('Error in updatePin:', error);
+        }
     }
 
     protected abstract updatePinContent(): void;

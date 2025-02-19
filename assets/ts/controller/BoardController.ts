@@ -7,37 +7,38 @@ import { PinType } from "../models/PinType";
 import { ToDoPin } from "../models/ToDoPin";
 import { AjaxController } from "./AjaxController";
 import { HTMLSnippets } from "../ressources/HTMLSnippets";
+import { ToDoEntry } from "../models/ToDoEntry";
 
-export class PinController {
+export class BoardController {
 
     /**
      * entry
      */
-    public static async init() {
-        await PinController.loadPinTypes()
-        await PinController.loadCategories()
-        await PinController.loadPins()
-        await PinController.displayPins()
+    public async init() {
+        await BoardController.loadPinTypes()
+        await BoardController.loadCategories()
+        await BoardController.loadPins()
+        await BoardController.displayPins()
 
         // Add click handlers for new pin creation
         document.querySelector('.create-note')?.addEventListener('click', (e) => {
             e.preventDefault();
-            PinController.showPinEditor(1);
+            BoardController.showPinEditor(1);
         });
 
         document.querySelector('.create-todo')?.addEventListener('click', (e) => {
             e.preventDefault();
-            PinController.showPinEditor(2);
+            BoardController.showPinEditor(2);
         });
 
         document.querySelector('.create-appointment')?.addEventListener('click', (e) => {
             e.preventDefault();
-            PinController.showPinEditor(3);
+            BoardController.showPinEditor(3);
         });
 
         document.querySelector('.create-image')?.addEventListener('click', (e) => {
             e.preventDefault();
-            PinController.showPinEditor(4);
+            BoardController.showPinEditor(4);
         });
     }
 
@@ -46,7 +47,7 @@ export class PinController {
         pinTypes.forEach(pinTypeData => {
             PinType.initPinTypeInstance(pinTypeData);
         });
-        console.log(PinType.instances)
+        // console.log(PinType.instances)
     }
 
     private static async loadCategories() {
@@ -54,38 +55,47 @@ export class PinController {
         userCategories.forEach(userCategory => {
             Category.initCategoryInstance(userCategory);
         });
-        console.log(Category.instances)
+        // console.log(Category.instances)
     }
 
     private static async loadPins() {
-        const pins = await AjaxController.getUserPins()
+        console.log('Starting to load pins...');
+        const pins = await AjaxController.getUserPins();
+        console.log('Received pins from server:', pins);
+
         pins.forEach(pin => {
+            console.log('Processing pin:', pin);
             switch (pin['type']) {
                 case 1:
                     //Note
-                    NotePin.initNotePinInstance(pin)
-                    break
+                    NotePin.initNotePinInstance(pin);
+                    break;
                 case 2:
-                    //Image
-                    ImagePin.initImagePinInstance(pin)
-                    break
-                case 3:
                     //ToDo
-                    ToDoPin.initToDoPinInstance(pin)
-                    break
-                case 4:
+                    console.log('Creating ToDo pin from:', pin);
+                    const todoPin = ToDoPin.initToDoPinInstance(pin);
+                    console.log('Created ToDo pin:', todoPin);
+                    break;
+                case 3:
                     //Appointment
-                    AppointmentPin.initAppointmentPinInstance(pin)
-                    break
+                    AppointmentPin.initAppointmentPinInstance(pin);
+                    break;
+                case 4:
+                    //Image
+                    ImagePin.initImagePinInstance(pin);
+                    break;
             }
         });
     }
 
     private static async displayPins() {
-        console.log(Pin.instances)
+        console.log('Starting to display pins...');
+        console.log('All pins:', Pin.instances);
         Pin.instances.forEach(pin => {
-            pin.buildPin()
+            console.log('Building pin:', pin);
+            pin.buildPin();
         });
+        console.log('Finished displaying pins');
     }
 
     public static async saveAll() {
@@ -102,7 +112,7 @@ export class PinController {
     }
 
     public static async createPin(pinType: number, categoryId: number, title: string, data: any) {
-        console.log('Creating pin:', { pinType, categoryId, title, data });
+        // console.log('Creating pin:', { pinType, categoryId, title, data });
 
         try {
             // Get category instance
@@ -159,19 +169,19 @@ export class PinController {
     }
 
     private static async showPinEditor(pinType: number, existingPin?: Pin) {
-        console.log('Opening pin editor:', { pinType, existingPin });
+        // console.log('Opening pin editor:', { pinType, existingPin });
 
         try {
             // Remove any existing modals and backdrops with proper cleanup
             const cleanup = () => {
-                console.log('Starting cleanup...');
+                // console.log('Starting cleanup...');
                 try {
                     const modals = document.querySelectorAll('.modal-backdrop, .pin-editor');
-                    console.log('Found elements to clean:', modals.length);
+                    // console.log('Found elements to clean:', modals.length);
 
                     modals.forEach((el, index) => {
                         try {
-                            console.log(`Cleaning element ${index}:`, el);
+                            // console.log(`Cleaning element ${index}:`, el);
                             if (el.classList.contains('pin-editor')) {
                                 const newEl = el.cloneNode(true);
                                 el.parentNode?.replaceChild(newEl, el);
@@ -184,7 +194,7 @@ export class PinController {
 
                     document.body.classList.remove('modal-open');
                     document.body.style.paddingRight = '';
-                    console.log('Cleanup completed');
+                    // console.log('Cleanup completed');
                 } catch (err) {
                     console.error('Error in cleanup:', err);
                 }
@@ -192,7 +202,7 @@ export class PinController {
 
             cleanup();
 
-            console.log('Creating new modal...');
+            // console.log('Creating new modal...');
             const modalWrapper = document.createElement('div');
             modalWrapper.innerHTML = HTMLSnippets.PIN_EDITOR;
             const modal = modalWrapper.firstElementChild as HTMLElement;
@@ -201,20 +211,42 @@ export class PinController {
                 throw new Error('Failed to create modal element');
             }
 
-            // Add a unique identifier and ensure it's not a class selector
+            // Add a unique identifier
             const modalId = `pin-editor-${Date.now()}`;
             modal.id = modalId;
             modal.classList.add('modal', 'pin-editor');
 
-            // Prevent modal from affecting page layout
+            // Remove aria-hidden and add proper accessibility attributes
+            modal.removeAttribute('aria-hidden');
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            modal.setAttribute('aria-labelledby', 'pinEditorLabel');
+
+            // Update modal styles
             modal.style.position = 'fixed';
             modal.style.top = '0';
             modal.style.right = '0';
             modal.style.bottom = '0';
             modal.style.left = '0';
             modal.style.zIndex = '1050';
-            modal.style.overflow = 'hidden';
+            modal.style.overflow = 'auto';
             modal.style.outline = '0';
+
+            // Add styles for modal dialog to ensure proper scrolling
+            const modalDialogs = modal.querySelector('.modal-dialog') as HTMLElement;
+            if (modalDialogs) {
+                modalDialogs.style.margin = '1.75rem auto';
+                modalDialogs.style.maxHeight = 'calc(100vh - 3.5rem)';
+                modalDialogs.style.display = 'flex';
+                modalDialogs.style.flexDirection = 'column';
+            }
+
+            // Make modal body scrollable if needed
+            const modalBody = modal.querySelector('.modal-body') as HTMLElement;
+            if (modalBody) {
+                modalBody.style.overflow = 'auto';
+                modalBody.style.maxHeight = 'calc(100vh - 210px)';
+            }
 
             // Add padding-right to body to prevent content shift
             const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -225,7 +257,7 @@ export class PinController {
             if (modalTitle) {
                 modalTitle.textContent = existingPin
                     ? `${existingPin.title} bearbeiten`
-                    : PinController.getPinTypeTitle(pinType);
+                    : BoardController.getPinTypeTitle(pinType);
             }
 
             // Add content editor based on pin type
@@ -274,7 +306,7 @@ export class PinController {
 
             // Then populate existing data if editing
             if (existingPin) {
-                console.log('Populating existing pin data:', existingPin);
+                // console.log('Populating existing pin data:', existingPin);
 
                 // Set title
                 const titleInput = modal.querySelector('.pin-title-input') as HTMLInputElement;
@@ -314,10 +346,14 @@ export class PinController {
                             }
                             break;
                         case 3: // Appointment
-                            const dateInput = contentEditor.querySelector('.appointment-datetime-input') as HTMLInputElement;
-                            if (dateInput) {
-                                dateInput.value = (existingPin as any).datetime || '';
-                            }
+                            const existingAppointment = existingPin as AppointmentPin;
+                            const appointmentTitle = contentEditor?.querySelector('.appointment-title-input') as HTMLInputElement;
+                            const beginInput = contentEditor?.querySelector('.appointment-begin-input') as HTMLInputElement;
+                            const endInput = contentEditor?.querySelector('.appointment-end-input') as HTMLInputElement;
+
+                            if (appointmentTitle) appointmentTitle.value = existingAppointment.title;
+                            if (beginInput) beginInput.value = existingAppointment.beginAt.toISOString().slice(0, 16);
+                            if (endInput) endInput.value = existingAppointment.endAt.toISOString().slice(0, 16);
                             break;
                         case 4: // Image
                             const imageThumb = contentEditor.querySelector('.image-thumb');
@@ -398,6 +434,7 @@ export class PinController {
             const footer = document.createElement('div');
             footer.className = 'modal-footer';
             footer.innerHTML = `
+                <button type="button" class="btn btn-danger me-auto" data-action="delete">Löschen</button>
                 <button type="button" class="btn btn-secondary" data-action="close">Abbrechen</button>
                 <button type="button" class="btn btn-primary" data-action="save">Speichern</button>
             `;
@@ -408,15 +445,15 @@ export class PinController {
 
             // Handle all close actions with proper cleanup
             const closeModal = () => {
-                console.log('Closing modal...');
+                // console.log('Closing modal...');
                 try {
                     const modalToClose = document.getElementById(modalId);
                     const backdrop = document.querySelector('.modal-backdrop');
-                    console.log('Elements to remove:', { modalToClose, backdrop });
+                    // console.log('Elements to remove:', { modalToClose, backdrop });
 
                     if (modalToClose && backdrop) {
                         // Log tracked events before cleanup
-                        console.log('Active event listeners:', Array.from(eventTracker));
+                        // console.log('Active event listeners:', Array.from(eventTracker));
 
                         modalToClose.remove();
                         backdrop.remove();
@@ -425,7 +462,7 @@ export class PinController {
                         document.removeEventListener('keydown', escapeHandler);
                         eventTracker.clear();
 
-                        console.log('Modal closed successfully');
+                        // console.log('Modal closed successfully');
                     }
                 } catch (err) {
                     console.error('Error closing modal:', err);
@@ -441,7 +478,7 @@ export class PinController {
 
             // Add event listeners with tracking
             const addModalListeners = () => {
-                console.log('Adding modal listeners...');
+                // console.log('Adding modal listeners...');
                 try {
                     // Close button in header
                     modal.querySelector('.btn-close')?.addEventListener('click', (e) => {
@@ -466,61 +503,12 @@ export class PinController {
                             // Get common fields
                             const titleInput = modal.querySelector('.pin-title-input') as HTMLInputElement;
                             const categorySelect = modal.querySelector('.pin-category-select') as HTMLSelectElement;
+                            const contentEditor = modal.querySelector('.pin-content-editor');
 
                             const title = titleInput?.value || '';
                             const categoryId = parseInt(categorySelect?.value || '0');
 
-                            // Get content based on pin type
-                            let data: any = {};
-                            const contentEditor = modal.querySelector('.pin-content-editor');
-
-                            switch (pinType) {
-                                case 1: // Note
-                                    const noteInput = contentEditor?.querySelector('.note-content-input') as HTMLTextAreaElement;
-                                    data.content = noteInput?.value || '';
-                                    break;
-
-                                case 2: // ToDo
-                                    const entries: any[] = [];
-                                    contentEditor?.querySelectorAll('.to-do-entry-editor').forEach(entry => {
-                                        const contentInput = entry.querySelector('.to-do-entry-content-input') as HTMLInputElement;
-                                        const checkboxInput = entry.querySelector('.to-do-entry-checkbox') as HTMLInputElement;
-                                        const datetimeInput = entry.querySelector('.to-do-entry-datetime-input') as HTMLInputElement;
-
-                                        entries.push({
-                                            content: contentInput?.value || '',
-                                            done: checkboxInput?.checked || false,
-                                            datetime: datetimeInput?.value || null
-                                        });
-                                    });
-                                    data.entries = entries;
-                                    break;
-
-                                case 3: // Appointment
-                                    const titleInput = contentEditor?.querySelector('.appointment-title-input') as HTMLInputElement;
-                                    const beginInput = contentEditor?.querySelector('.appointment-begin-input') as HTMLInputElement;
-                                    const endInput = contentEditor?.querySelector('.appointment-end-input') as HTMLInputElement;
-
-                                    data.title = titleInput?.value || '';
-                                    data.beginAt = beginInput?.value || '';
-                                    data.endAt = endInput?.value || '';
-                                    break;
-
-                                case 4: // Image
-                                    const imageInput = contentEditor?.querySelector('.image-input') as HTMLInputElement;
-                                    if (imageInput?.files?.length) {
-                                        const file = imageInput.files[0];
-                                        // Convert file to base64
-                                        const reader = new FileReader();
-                                        data.image = await new Promise((resolve) => {
-                                            reader.onload = (e) => resolve(e.target?.result);
-                                            reader.readAsDataURL(file);
-                                        });
-                                    }
-                                    break;
-                            }
-
-                            // Validate required fields
+                            // Validate required fields first
                             if (!title) {
                                 alert('Bitte geben Sie einen Titel ein');
                                 return;
@@ -530,50 +518,107 @@ export class PinController {
                                 return;
                             }
 
-                            if (existingPin) {
-                                // Update existing pin
-                                existingPin.title = title;
-                                existingPin.category = Category.getCategoryInstance(categoryId);
+                            // Handle pin type specific content
+                            switch (pinType) {
+                                case 1: // Note
+                                    const noteInput = contentEditor?.querySelector('.note-content-input') as HTMLTextAreaElement;
+                                    if (existingPin) {
+                                        // Update existing note
+                                        const existingNote = existingPin as NotePin;
+                                        existingNote.content = noteInput?.value || '';
+                                        existingNote.setSaved(false);
+                                        await AjaxController.updatePin(existingNote);
+                                        existingNote.updatePin();
+                                    } else {
+                                        // Create new note
+                                        await BoardController.createPin(pinType, categoryId, title, {
+                                            content: noteInput?.value || ''
+                                        });
+                                    }
+                                    break;
+                                case 2: // ToDo
+                                    const entries: any[] = [];
+                                    contentEditor?.querySelectorAll('.to-do-entry-editor').forEach(entry => {
+                                        const contentInput = entry.querySelector('.to-do-entry-content-input') as HTMLInputElement;
+                                        const checkboxInput = entry.querySelector('.to-do-entry-checkbox') as HTMLInputElement;
+                                        const datetimeInput = entry.querySelector('.to-do-entry-datetime-input') as HTMLInputElement;
 
-                                // Update type-specific data
-                                switch (pinType) {
-                                    case 1: // Note
-                                        (existingPin as any).content = data.content;
-                                        break;
-                                    case 2: // ToDo
-                                        (existingPin as any).entries = data.entries;
-                                        break;
-                                    case 3: // Appointment
-                                        (existingPin as any).datetime = data.datetime;
-                                        break;
-                                    case 4: // Image
-                                        if (data.image) {
-                                            (existingPin as any).imagePath = data.image;
+                                        // Create proper ToDoEntry instance
+                                        const todoEntry = new ToDoEntry(
+                                            0,  // id
+                                            0,  // row
+                                            contentInput?.value || '',
+                                            checkboxInput?.checked || false,
+                                            datetimeInput?.value ? new Date(datetimeInput.value) : null
+                                        );
+                                        entries.push(todoEntry);
+                                    });
+                                    if (existingPin) {
+                                        const existingTodo = existingPin as ToDoPin;
+                                        existingTodo.entries = entries;
+                                        existingTodo.setSaved(false);
+                                        existingTodo.updatePin();
+                                        await AjaxController.updatePin(existingTodo);
+                                    } else {
+                                        await BoardController.createPin(pinType, categoryId, title, { entries });
+                                    }
+                                    break;
+                                case 3: // Appointment
+                                    const appointmentTitle = contentEditor?.querySelector('.appointment-title-input') as HTMLInputElement;
+                                    const beginInput = contentEditor?.querySelector('.appointment-begin-input') as HTMLInputElement;
+                                    const endInput = contentEditor?.querySelector('.appointment-end-input') as HTMLInputElement;
+
+                                    if (existingPin) {
+                                        const existingAppointment = existingPin as AppointmentPin;
+                                        existingAppointment.title = appointmentTitle?.value || '';
+                                        existingAppointment.beginAt = beginInput?.value ? new Date(beginInput.value) : new Date();
+                                        existingAppointment.endAt = endInput?.value ? new Date(endInput.value) : new Date();
+                                        existingAppointment.setSaved(false);
+                                        existingAppointment.updatePin();
+                                        await AjaxController.updatePin(existingAppointment);
+                                    } else {
+                                        await BoardController.createPin(pinType, categoryId, title, {
+                                            title: title,
+                                            beginAt: beginInput?.value,
+                                            endAt: endInput?.value
+                                        });
+                                    }
+                                    break;
+                                case 4: // Image
+                                    const imageInput = contentEditor?.querySelector('.image-input') as HTMLInputElement;
+                                    if (imageInput?.files?.length) {
+                                        const file = imageInput.files[0];
+                                        const imageData = await new Promise<string>((resolve) => {
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => resolve(e.target?.result as string);
+                                            reader.readAsDataURL(file);
+                                        });
+
+                                        if (existingPin) {
+                                            const existingImage = existingPin as ImagePin;
+                                            existingImage.imagePath = imageData;
+                                            existingImage.setSaved(false);
+                                            existingImage.updatePin();
+                                            await AjaxController.updatePin(existingImage);
+                                        } else {
+                                            await BoardController.createPin(pinType, categoryId, title, { image: imageData });
                                         }
-                                        break;
-                                }
-
-                                // Update pin in UI
-                                existingPin.updatePin();
-
-                                // Mark as unsaved for later sync
-                                existingPin.setSaved(false);
-                            } else {
-                                // Create new pin
-                                await PinController.createPin(pinType, categoryId, title, data);
+                                    }
+                                    break;
                             }
 
+                            // Close modal after successful save/create
                             closeModal();
 
-                        } catch (err) {
-                            console.error('Error saving pin:', err);
-                            alert('Fehler beim Speichern des Pins');
+                        } catch (error) {
+                            console.error('Error saving pin:', error);
+                            alert('Error saving pin: ' + error.message);
                         }
                     });
 
                     // Backdrop click
                     modal.addEventListener('click', (e) => {
-                        console.log('Modal click target:', e.target);
+                        // console.log('Modal click target:', e.target);
                         if (e.target === modal) {
                             e.preventDefault();
                             e.stopPropagation();
@@ -589,7 +634,24 @@ export class PinController {
                     // Escape key
                     document.addEventListener('keydown', escapeHandler);
 
-                    console.log('Modal listeners added successfully');
+                    // Delete button
+                    modal.querySelector('button[data-action="delete"]')?.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (existingPin && confirm('Möchten Sie diesen Pin wirklich löschen?')) {
+                            try {
+                                await AjaxController.deletePin(existingPin.id);
+                                existingPin.pinContainer?.remove();
+                                closeModal();
+                            } catch (error) {
+                                console.error('Error deleting pin:', error);
+                                alert('Fehler beim Löschen des Pins');
+                            }
+                        }
+                    });
+
+                    // console.log('Modal listeners added successfully');
                 } catch (err) {
                     console.error('Error adding modal listeners:', err);
                 }
@@ -612,7 +674,7 @@ export class PinController {
                 document.body.classList.add('modal-open');
             });
 
-            console.log('Modal setup completed');
+            // console.log('Modal setup completed');
             return modal;
         } catch (err) {
             console.error('Fatal error in showPinEditor:', err);
@@ -637,13 +699,13 @@ export class PinController {
 
     // Add logging to the Pin class edit method
     public static editPin(pin: Pin) {
-        console.log('Edit pin called for pin:', pin.id);
+        // console.log('Edit pin called for pin:', pin.id);
         try {
             // First ensure any existing modals are properly cleaned up
             const cleanup = () => {
-                console.log('Cleaning up before editing pin:', pin.id);
+                // console.log('Cleaning up before editing pin:', pin.id);
                 document.querySelectorAll('.modal-backdrop, .pin-editor').forEach(el => {
-                    console.log('Removing element:', el);
+                    // console.log('Removing element:', el);
                     el.remove();
                 });
                 document.body.classList.remove('modal-open');
@@ -653,8 +715,8 @@ export class PinController {
             cleanup();
 
             // Show the editor
-            console.log('Showing editor for pin:', pin.id);
-            PinController.showPinEditor(pin.type.id, pin);
+            // console.log('Showing editor for pin:', pin.id);
+            BoardController.showPinEditor(pin.type.id, pin);
         } catch (err) {
             console.error('Error editing pin:', pin.id, err);
         }

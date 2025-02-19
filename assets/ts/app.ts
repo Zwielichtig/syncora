@@ -2,25 +2,13 @@
 import '../styles/app.scss';
 import 'bootstrap';
 import { controllerMapper } from './controllerMapper';
-import { PinController } from './controller/PinController';
-import { AjaxController } from './controller/AjaxController';
+import { NavigationController } from './controller/NavigationController';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const page = document.body.dataset.pageType;
-    console.log('Current page type:', page); // Debug log
 
-    if (page === 'board') {
-        await AjaxController.getPinTypes();
-        await AjaxController.getUserCategories();
-        await PinController.init();
-
-        // Only add save button listener on board page
-        const saveButton = document.getElementById("saveAllBtn") as HTMLButtonElement;
-        if (saveButton) {
-            saveButton.addEventListener('click', () => {
-                PinController.saveAll();
-            });
-        }
+    if(page === 'board' || page === 'calendar') {
+        NavigationController.init();
     }
 
     const ControllerClass = controllerMapper[page];

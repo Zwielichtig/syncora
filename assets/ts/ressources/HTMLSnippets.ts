@@ -55,12 +55,12 @@ export class HTMLSnippets {
     `
 
     public static PIN_EDITOR = `
-        <div class="modal fade pin-editor" tabindex="-1" aria-labelledby="pinEditorLabel" aria-hidden="true">
+        <div class="modal fade pin-editor" role="dialog" aria-modal="true" aria-labelledby="pinEditorLabel">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="pinEditorLabel">Pin bearbeiten</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="pinEditorLabel"></h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row mb-2 pin-titel-editor">
@@ -128,17 +128,17 @@ export class HTMLSnippets {
 
     public static APPOINTMENT_EDITOR = `
     <div class="appointment-editor">
-        <div class="mb-3">
-            <label class="form-label">Titel</label>
-            <input type="text" class="form-control appointment-title-input" placeholder="Termin Titel">
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Beginn</label>
+            <div class="col-sm-9">
+                <input type="datetime-local" class="form-control appointment-begin-input">
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Beginn</label>
-            <input type="datetime-local" class="form-control appointment-begin-input">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Ende</label>
-            <input type="datetime-local" class="form-control appointment-end-input">
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Ende</label>
+            <div class="col-sm-9">
+                <input type="datetime-local" class="form-control appointment-end-input">
+            </div>
         </div>
     </div>
     `

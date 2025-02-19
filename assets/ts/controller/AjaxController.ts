@@ -1,4 +1,6 @@
 import { Pin } from "../models/Pin";
+import { AppointmentPin } from "../models/AppointmentPin";
+import { NotePin } from "../models/NotePin";
 
 export class AjaxController {
 
@@ -64,20 +66,42 @@ export class AjaxController {
 		}
 	}
 
-	static async createPin(pin: Pin) {
-		try {
-			var body = {
-				function:'create-pin',
-				data: {
-					pin: pin,
-				}
-			};
+	public static async createPin(pin: Pin): Promise<any> {
+		const pinData: any = {
+			type: pin.type,
+			category: pin.category,
+			title: pin.title,
+			posX: pin.posX,
+			posY: pin.posY,
+			width: pin.width,
+			height: pin.height
+		};
 
-			const response = await this.fetchData(body)
-			//TODO Response Handling
-		} catch (error) {
-			//TODO Error Handling
+		if (pin instanceof AppointmentPin) {
+			pinData.beginAt = pin.beginAt.toISOString();
+			pinData.endAt = pin.endAt.toISOString();
+		} else if (pin instanceof NotePin) {
+			pinData.content = (pin as NotePin).content;
 		}
+
+		const response = await fetch('/ajax', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				function: 'create-pin',
+				data: { pin: pinData }
+			})
+		});
+		const result = await response.json();
+
+		// Update pin with ID from server
+		if (result.id) {
+			pin.id = result.id;
+		}
+
+		return result;
 	}
 
 
@@ -90,7 +114,7 @@ export class AjaxController {
 			const response = await this.fetchData(body)
 			return response
 		} catch (error) {
-			console.log(error)
+			// console.log(error)
 		}
 		return []
 	}
@@ -107,7 +131,7 @@ export class AjaxController {
 			// console.log(response)
 		} catch (error) {
 			//TODO Error Handling
-			console.log(error)
+			// console.log(error)
 		}
 	}
 
@@ -125,7 +149,7 @@ export class AjaxController {
 			//TODO Response Handling
 			// console.log(response)
 		} catch (error) {
-			console.log(error)
+			// console.log(error)
 		}
 		return []
 	}
@@ -139,7 +163,7 @@ export class AjaxController {
 			const response = await this.fetchData(body)
 			return response
 		} catch (error) {
-			console.log(error)
+			// console.log(error)
 		}
 		return []
 	}
@@ -191,9 +215,62 @@ export class AjaxController {
 			const response = await this.fetchData(body)
 
 		} catch (error) {
-			console.log(error)
+			// console.log(error)
 		}
 	}
 
+	public static async updatePin(pin: Pin): Promise<any> {
+		const response = await fetch('/ajax', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				function: 'update-pin',
+				data: {
+					pin: {
+						id: pin.id,
+						title: pin.title,
+						type: pin.type,
+						category: pin.category,
+						posX: pin.posX,
+						posY: pin.posY,
+						width: pin.width,
+						height: pin.height,
+						pinContent: pin.getPinContentData()
+					}
+				}
+			})
+		});
+		return await response.json();
+	}
+
+	public static async deletePin(pinId: number): Promise<any> {
+		const response = await fetch('/ajax', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				function: 'delete-pin',
+				data: { id: pinId }
+			})
+		});
+		return await response.json();
+	}
+
+	public static async getAppointmentsForExport(): Promise<any[]> {
+		const response = await fetch('/ajax', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				function: 'get-appointments-export'
+			})
+		});
+		const result = await response.json();
+		return result || [];
+	}
 
 }

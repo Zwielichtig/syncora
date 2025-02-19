@@ -5,7 +5,7 @@ export class ToDoEntry {
     row: number
     datetime: Date | null
     checked: boolean
-    content: string 
+    content: string
     entryContainer: HTMLDivElement
 
     entryEditor: HTMLDivElement
@@ -16,7 +16,7 @@ export class ToDoEntry {
 
 
 
-    public static initToDoEntryInstance(data: any) : ToDoEntry { 
+    public static initToDoEntryInstance(data: any) : ToDoEntry {
 
         const datetime = new Date(data.datetime['date'])
         //TODO checked
@@ -34,11 +34,11 @@ export class ToDoEntry {
     public buildEntry() : HTMLDivElement{
         const parser = new DOMParser()
         const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_ENTRY, 'text/html')
-        
+
         this.entryContainer = htmlEntry.querySelector('.to-do-entry')
 
         //checkbox
-        this.checkbox = htmlEntry.querySelector('.to-do-entry-checkbox') 
+        this.checkbox = htmlEntry.querySelector('.to-do-entry-checkbox')
         if (this.checked) {
             this.checkbox.setAttribute('checked', null)
         } else {
@@ -52,21 +52,21 @@ export class ToDoEntry {
         this.contentSpan = htmlEntry.querySelector('.to-do-entry-content')
         this.contentSpan.innerHTML = this.content;
 
-        //datetime span 
+        //datetime span
         this.datetimeSpan = htmlEntry.querySelector('.to-do-entry-datetime')
         if (this.datetime) {
             this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString()
         }
-       
+
         return this.entryContainer
     }
 
     public buildEntryEditor() : HTMLDivElement{
         const parser = new DOMParser()
         const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_ENTRY_EDITOR, 'text/html')
-        
+
         this.entryEditor = htmlEntry.querySelector('.to-do-entry-editor') as HTMLDivElement
-        
+
         //checkbox
         const checkbox = htmlEntry.querySelector('.to-do-entry-checkbox') as HTMLInputElement
         if (this.checked) {
@@ -96,14 +96,14 @@ export class ToDoEntry {
     }
 
     private onCheckboxChange(event: Event) {
-        console.log((event.target as HTMLInputElement).checked)
+        // console.log((event.target as HTMLInputElement).checked)
         this.checked = (event.target as HTMLInputElement).checked
         if (this.checked) {
             this.checkbox.setAttribute('checked', null)
         } else {
             this.checkbox.removeAttribute('checked')
         }
-        
+
     }
 
     private onContentChange(event: Event) {
@@ -113,7 +113,7 @@ export class ToDoEntry {
 
     private onDatetimeChange(event: Event) {
         this.datetime = new Date((event.target as HTMLInputElement).value)
-        this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString() 
+        this.datetimeSpan.innerHTML = this.datetime.toLocaleDateString()
     }
 
     public getEntryData(): Object {
@@ -128,5 +128,5 @@ export class ToDoEntry {
     }
 
 
-    
+
 }

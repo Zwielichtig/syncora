@@ -11,15 +11,11 @@ use App\Entity\Image;
 use App\Entity\ToDoEntry;
 use App\Entity\User;
 use App\Entity\UserToCategory;
-use App\Repository\AppointmentRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 
@@ -82,6 +78,15 @@ class AjaxController extends BaseController
                         $this->entityManager
                     );
                     break;
+                case 'update-pin':
+                    $response = $this->updatePin($input);
+                    break;
+                case 'delete-pin':
+                    $response = $this->deletePin($input);
+                    break;
+                case 'get-appointments-export':
+                    $response = $this->getAppointmentsForExport();
+                    break;
 
 
             }
@@ -101,7 +106,7 @@ class AjaxController extends BaseController
             $message = 'Die Datei konnte nicht unter '.$filePath.' gespeichert werden.';
             $response->setMessage($message);
         } else {
-            $response->setSuccess(true);
+            $response->setSuccesful();
         }
         return $response;
     }
@@ -266,9 +271,9 @@ class AjaxController extends BaseController
                             if ($appointment) {
                                 $pinData['pinContent'] = [
                                     'id' => $appointment->getId(),
-                                    'title' => $appointment->getTitle(),
-                                    'begin_at' => $appointment->getBeginAt() ? $appointment->getBeginAt()->format('c') : null,
-                                    'end_at' => $appointment->getEndAt() ? $appointment->getEndAt()->format('c') : null
+                                    'title' => $pin->getTitle(),
+                                    'beginAt' => $appointment->getBeginAt() ? $appointment->getBeginAt()->format('c') : null,
+                                    'endAt' => $appointment->getEndAt() ? $appointment->getEndAt()->format('c') : null
                                 ];
                             }
                             break;
@@ -300,28 +305,33 @@ class AjaxController extends BaseController
     function updateUserPins($input): AJAXResponse
     {
         $response = new AJAXResponse();
-        $pins = $input['data'];  // Get pins from data key
 
-        foreach ($pins as $pinData) {
-            if (!isset($pinData['id'])) {
-                continue;
+        // Debug log
+        error_log('Updating pins with data: ' . print_r($input, true));
+
+        if (isset($input['data']) && is_array($input['data'])) {
+            foreach ($input['data'] as $pinData) {
+                if (!isset($pinData['id'])) {
+                    continue;
+                }
+
+                $pin = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
+                if (!$pin) {
+                    continue;
+                }
+
+                // Update pin position and dimensions
+                $pin->setPosX($pinData['posX']);
+                $pin->setPosY($pinData['posY']);
+                $pin->setWidth($pinData['width']);
+                $pin->setHeight($pinData['height']);
+
+                $this->entityManager->persist($pin);
             }
 
-            $pinEntity = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
-            if (!$pinEntity) {
-                continue;
-            }
-
-            // Update pin position and size
-            $pinEntity->setPosX($pinData['posX']);
-            $pinEntity->setPosY($pinData['posY']);
-            $pinEntity->setWidth($pinData['width']);
-            $pinEntity->setHeight($pinData['height']);
-
-            $this->entityManager->persist($pinEntity);
+            $this->entityManager->flush();
         }
 
-        $this->entityManager->flush();
         $response->setSuccesful();
         return $response;
     }
@@ -431,12 +441,16 @@ class AjaxController extends BaseController
             case 3: // Appointment
                 $appointment = new Appointment($pin, $_SESSION['user']['id']);
                 $appointment->setTitle($data['title'] ?? '');
-                if (isset($data['begin_at'])) {
-                    $appointment->setBeginAt(new \DateTime($data['begin_at']));
+
+                if (isset($data['beginAt'])) {
+                    $beginAt = new \DateTime($data['beginAt']);
+                    $appointment->setBeginAt($beginAt);
                 }
-                if (isset($data['end_at'])) {
-                    $appointment->setEndAt(new \DateTime($data['end_at']));
+                if (isset($data['endAt'])) {
+                    $endAt = new \DateTime($data['endAt']);
+                    $appointment->setEndAt($endAt);
                 }
+
                 $this->entityManager->persist($appointment);
                 break;
 
@@ -456,6 +470,7 @@ class AjaxController extends BaseController
 
         $this->entityManager->flush();
         $response->setSuccesful();
+        $response->setData(['id' => $pin->getId()]);
         return $response;
     }
 
@@ -476,11 +491,198 @@ class AjaxController extends BaseController
 
         return $filename;
     }
+
+    /**
+     * Updates an existing pin and its content
+     */
+    private function updatePin($input): AJAXResponse
+    {
+        $response = new AJAXResponse();
+        $pinData = $input['data']['pin'];
+
+        try {
+            // Get and update the base pin
+            $pin = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
+            if (!$pin) {
+                throw new \Exception('Pin not found');
+            }
+
+            $pin->setTitle($pinData['title']);
+            $pin->setPosX($pinData['posX']);
+            $pin->setPosY($pinData['posY']);
+            $pin->setWidth($pinData['width']);
+            $pin->setHeight($pinData['height']);
+
+            // Update pin content based on type
+            switch ($pin->getType()->getId()) {
+                case 1: // Note
+                    $note = $this->entityManager->getRepository(Note::class)->findOneBy(['pin' => $pin]);
+                    if ($note) {
+                        $note->setContent($pinData['pinContent']['content']);
+                    }
+                    break;
+
+                case 2: // ToDo
+                    $entries = $this->entityManager->getRepository(ToDoEntry::class)->findBy(['pin' => $pin]);
+                    foreach ($pinData['pinContent']['entries'] as $index => $entryData) {
+                        if (isset($entries[$index])) {
+                            // Update existing entry
+                            $entries[$index]->setContent($entryData['content']);
+                            $entries[$index]->setChecked($entryData['done']);
+                            if (isset($entryData['datetime'])) {
+                                $entries[$index]->setDatetime(new \DateTime($entryData['datetime']));
+                            }
+                        } else {
+                            // Create new entry if needed
+                            $entry = new ToDoEntry();
+                            $entry->setPin($pin);
+                            $entry->setContent($entryData['content']);
+                            $entry->setChecked($entryData['done']);
+                            if (isset($entryData['datetime'])) {
+                                $entry->setDatetime(new \DateTime($entryData['datetime']));
+                            }
+                            $this->entityManager->persist($entry);
+                        }
+                    }
+                    break;
+
+                case 3: // Appointment
+                    $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy(['pin' => $pin]);
+                    if ($appointment) {
+                        $appointment->setTitle($pinData['pinContent']['title']);
+                        $appointment->setBeginAt(new \DateTime($pinData['pinContent']['beginAt']));
+                        $appointment->setEndAt(new \DateTime($pinData['pinContent']['endAt']));
+                    }
+                    break;
+
+                case 4: // Image
+                    $image = $this->entityManager->getRepository(Image::class)->findOneBy(['pin' => $pin]);
+                    if ($image && isset($pinData['pinContent']['image'])) {
+                        $imageData = $pinData['pinContent']['image'];
+                        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+                        $imageData = base64_decode($imageData);
+                        $filename = $this->saveImage($imageData);
+                        $image->setFilePath($filename);
+                    }
+                    break;
+            }
+
+            $this->entityManager->flush();
+            $response->setSuccesful();
+
+        } catch (\Exception $e) {
+            error_log('Error updating pin: ' . $e->getMessage());
+        }
+
+        return $response;
+    }
+
+    /**
+     * Deletes a pin and its associated content
+     */
+    private function deletePin($input): AJAXResponse
+    {
+        $response = new AJAXResponse();
+        $pinId = $input['data']['id'];
+
+        try {
+            // Get the pin
+            $pin = $this->entityManager->getRepository(Pin::class)->find($pinId);
+            if (!$pin) {
+                throw new \Exception('Pin not found');
+            }
+
+            // Delete associated content based on pin type
+            switch ($pin->getType()->getId()) {
+                case 1: // Note
+                    $note = $this->entityManager->getRepository(Note::class)->findOneBy(['pin' => $pin]);
+                    if ($note) {
+                        $this->entityManager->remove($note);
+                    }
+                    break;
+
+                case 2: // ToDo
+                    $entries = $this->entityManager->getRepository(ToDoEntry::class)->findBy(['pin' => $pin]);
+                    foreach ($entries as $entry) {
+                        $this->entityManager->remove($entry);
+                    }
+                    break;
+
+                case 3: // Appointment
+                    $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy(['pin' => $pin]);
+                    if ($appointment) {
+                        $this->entityManager->remove($appointment);
+                    }
+                    break;
+
+                case 4: // Image
+                    $image = $this->entityManager->getRepository(Image::class)->findOneBy(['pin' => $pin]);
+                    if ($image) {
+                        // Delete image file if exists
+                        $filePath = $this->getParameter('uploads_directory') . '/' . $image->getFilePath();
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                        $this->entityManager->remove($image);
+                    }
+                    break;
+            }
+
+            // Delete the pin itself
+            $this->entityManager->remove($pin);
+            $this->entityManager->flush();
+
+            $response->setSuccesful();
+        } catch (\Exception $e) {
+            error_log('Error deleting pin: ' . $e->getMessage());
+        }
+
+        return $response;
+    }
+
+    private function getAppointmentsForExport(): AJAXResponse {
+        $response = new AJAXResponse();
+        $data = [];
+
+        try {
+            // Get all pins of type appointment (type_id = 3) for the current user
+            $pins = $this->entityManager->getRepository(Pin::class)->createQueryBuilder('p')
+                ->join('p.category', 'c')
+                ->join('App\Entity\UserToCategory', 'utc', 'WITH', 'utc.category = c')
+                ->where('p.type = :type')
+                ->andWhere('utc.user = :userId')
+                ->setParameter('type', 3)
+                ->setParameter('userId', $_SESSION['user']['id'])
+                ->getQuery()
+                ->getResult();
+
+            foreach ($pins as $pin) {
+                $appointment = $this->entityManager->getRepository(Appointment::class)
+                    ->findOneBy(['pin' => $pin]);
+
+                if ($appointment) {
+                    $data[] = [
+                        'title' => $pin->getTitle(),
+                        'beginAt' => $appointment->getBeginAt()->format('c'),
+                        'endAt' => $appointment->getEndAt()->format('c')
+                    ];
+                }
+            }
+
+            $response->setSuccesful();
+            $response->setData($data);
+        } catch (\Exception $e) {
+            error_log('Error exporting appointments: ' . $e->getMessage());
+        }
+
+        return $response;
+    }
 }
 
 class AJAXResponse {
     private $data;
     private $success;
+    private $message;
 
     public function __construct() {
         $this->success = false;
@@ -494,6 +696,10 @@ class AJAXResponse {
         $this->success = true;
     }
 
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+
     public function getResponseCode():int {
         if ($this->success) {
             return 200;
@@ -503,6 +709,10 @@ class AJAXResponse {
 
     public function getData():string {
         return json_encode($this->data);
+    }
+
+    public function setSuccess(bool $success = true) {
+        $this->success = $success;
     }
 }
 
