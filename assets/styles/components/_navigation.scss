@@ -116,6 +116,28 @@
           z-index: 1000;
         }
       }
+
+      #saveAllBtn {
+        color: #4a5568;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+          color: #2d3748;
+          transform: scale(1.1);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+
+        i {
+          font-size: 1rem;
+        }
+      }
     }
 
     // The ".ml-auto" container:
