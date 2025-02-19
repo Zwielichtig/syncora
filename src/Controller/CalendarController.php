@@ -21,7 +21,7 @@ class CalendarController extends BaseController
         ]);
     }
 
-    #[Route('/fc-load-events', name: 'fc_load_events', methods: ['POST'])]
+    #[Route('/load-appointments', name: 'load_appointments', methods: ['POST'])]
     public function loadEvents(Request $request, AppointmentRepository $appointmentRepository): Response
     {
         $start = new \DateTime($request->get('start'));

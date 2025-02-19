@@ -19,7 +19,7 @@ export class CalendarController {
             },
             eventSources: [
                 {
-                    url: '/fc-load-events',
+                    url: '/load-appointments',
                     method: 'POST',
                     extraParams: {
                         filters: JSON.stringify({})
