@@ -1,0 +1,14 @@
+.modal {
+    &.pin-editor {
+        .modal-dialog {
+            @media (min-width: 576px) {
+                max-width: 500px;
+            }
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+}

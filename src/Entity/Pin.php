@@ -21,12 +21,20 @@ class Pin
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pins')]
-    #[ORM\JoinColumn(name: "group_id")]
-    private ?Group $pinGroup = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
+
+    #[ORM\Column]
+    private ?int $posX = null;
+
+    #[ORM\Column]
+    private ?int $posY = null;
+
+    #[ORM\Column]
+    private ?int $width = null;
+
+    #[ORM\Column]
+    private ?int $height = null;
 
     public function getId(): ?int
     {
@@ -57,18 +65,6 @@ class Pin
         return $this;
     }
 
-    public function getPinGroup(): ?Group
-    {
-        return $this->pinGroup;
-    }
-
-    public function setPinGroup(?Group $pinGroup): static
-    {
-        $this->pinGroup = $pinGroup;
-
-        return $this;
-    }
-
     public function getTitle(): ?string
     {
         return $this->title;
@@ -77,6 +73,54 @@ class Pin
     public function setTitle(?string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getPosX(): ?int
+    {
+        return $this->posX;
+    }
+
+    public function setPosX(int $posX): static
+    {
+        $this->posX = $posX;
+
+        return $this;
+    }
+
+    public function getPosY(): ?int
+    {
+        return $this->posY;
+    }
+
+    public function setPosY(int $posY): static
+    {
+        $this->posY = $posY;
+
+        return $this;
+    }
+
+    public function getWidth(): ?int
+    {
+        return $this->width;
+    }
+
+    public function setWidth(int $width): static
+    {
+        $this->width = $width;
+
+        return $this;
+    }
+
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+
+    public function setHeight(int $height): static
+    {
+        $this->height = $height;
 
         return $this;
     }
