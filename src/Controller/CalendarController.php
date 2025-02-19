@@ -26,7 +26,8 @@ class CalendarController extends BaseController
     {
         $start = new \DateTime($request->get('start'));
         $end = new \DateTime($request->get('end'));
-        $appointments = $appointmentRepository->findBetweenDates($start, $end);
+
+        $appointments = $appointmentRepository->findBetweenDates($start, $end, $_SESSION['user']['id']);
 
         $events = [];
         foreach ($appointments as $appointment) {

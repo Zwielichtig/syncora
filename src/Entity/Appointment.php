@@ -28,6 +28,9 @@ class Appointment extends Event
     #[ORM\Column(length: 255)]
     protected string $title = '';
 
+    #[ORM\Column(name: 'user_id')]
+    protected int $userId;
+
     public function getId(): int
     {
         return $this->id;
@@ -72,5 +75,15 @@ class Appointment extends Event
     public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
+
+    public function getUser(): int
+    {
+        return $this->userId;
+    }
+
+    public function setUser(int $userId): void
+    {
+        $this->userId = $userId;
     }
 }

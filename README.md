@@ -56,6 +56,19 @@ Start Watcher
 ```bash
 ddev watch
 ```
+<br>
+
+Open phpMyAdmin
+```bash
+ddev phpmyadmin
+```
+<br>
+
+Open Mailpit
+```bash
+ddev launch -m
+```
+
 ___
 - [Doctrine usage](/docs/doctrine.md)
 
