@@ -147,8 +147,6 @@ export class ImagePin extends Pin{
 
     }
 
-
-
     private loadImage(url: string): Promise<HTMLImageElement> {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -170,6 +168,13 @@ export class ImagePin extends Pin{
             filePath: this.filePath
         }
         return data
+    }
+
+    protected updatePinContent(): void {
+        const imageContainer = this.pinContainer.querySelector('.image-content');
+        if (imageContainer) {
+            imageContainer.innerHTML = `<img src="${this.filePath}" alt="Pin image" style="max-width: 100%;">`;
+        }
     }
 
 }

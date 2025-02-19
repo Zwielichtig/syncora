@@ -2,6 +2,7 @@ import { AjaxController } from "../controller/AjaxController"
 import { HTMLSnippets } from "../ressources/HTMLSnippets"
 import { Category } from "./Category"
 import { PinType } from "./PinType"
+import { PinController } from "../controller/PinController"
 
 export abstract class Pin {
     id: number
@@ -53,37 +54,41 @@ export abstract class Pin {
 
         this.isDragging = false
         this.saved = false;
-        
+
         Pin.instances.push(this)
     }
 
     public async buildPin() {
-        this.buildEditorModal()
-        console.log(this.title)
+        console.log('Building pin:', this.id);
+        this.buildEditorModal();
 
         const parser = new DOMParser();
-        const html = parser.parseFromString(HTMLSnippets.PIN, 'text/html')
-        this.pinContainer = html.querySelector('.pin')
-        this.pinContainer.id = 'pin'+this.id
+        const html = parser.parseFromString(HTMLSnippets.PIN, 'text/html');
+        this.pinContainer = html.querySelector('.pin');
+        this.pinContainer.id = 'pin' + this.id;
 
         //pin title
-        this.titleSpan = this.pinContainer.querySelector('.pin-title')
-        this.titleSpan.innerHTML = this.title
+        this.titleSpan = this.pinContainer.querySelector('.pin-title');
+        this.titleSpan.innerHTML = this.title;
 
         //category icon
-        this.categoryIcon = this.pinContainer.querySelector('.category-icon')
-        this.categoryIcon.style.backgroundColor = this.category.color
+        this.categoryIcon = this.pinContainer.querySelector('.category-icon');
+        this.categoryIcon.style.backgroundColor = this.category.color;
 
-        // Add modal to document body
-        document.body.appendChild(this.editorModal);
-
-        // Initialize modal trigger
+        // Initialize edit functionality
+        console.log('Setting up edit button for pin:', this.id);
         const editIcon = this.pinContainer.querySelector('.edit-icon') as HTMLElement;
-        editIcon.addEventListener('click', () => {
-            this.editorModal.classList.add('show');
-            this.editorModal.style.display = 'block';
-            document.body.classList.add('modal-open');
-        });
+        if (editIcon) {
+            console.log('Found edit icon for pin:', this.id);
+            editIcon.addEventListener('click', (e) => {
+                console.log('Edit icon clicked for pin:', this.id);
+                e.preventDefault();
+                e.stopPropagation();
+                PinController.editPin(this);
+            });
+        } else {
+            console.error('Edit icon not found for pin:', this.id);
+        }
 
         //pin header
         const pinHeader = this.pinContainer.querySelector('.pin-header')
@@ -110,7 +115,8 @@ export abstract class Pin {
         this.pinContainer.style.width = `${this.width}px`;
         this.pinContainer.style.height = `${this.height}px`;
 
-        document.body.appendChild(this.pinContainer)
+        document.body.appendChild(this.pinContainer);
+        console.log('Pin built and added to DOM:', this.id);
 
         // Add resize event listeners
         this.pinContainer.addEventListener('mousedown', (e: MouseEvent) => {
@@ -335,4 +341,33 @@ export abstract class Pin {
     }
 
     protected abstract getPinContentData():Object;
+
+    protected addEditListener() {
+        console.log('Adding edit listener to pin:', this);
+        try {
+            this.pinContainer?.querySelector('.edit-icon')?.addEventListener('click', () => {
+                console.log('Edit icon clicked for pin:', this);
+                PinController.editPin(this);
+            });
+        } catch (err) {
+            console.error('Error adding edit listener:', err);
+        }
+    }
+
+    public updatePin() {
+        // Update title
+        if (this.titleSpan) {
+            this.titleSpan.innerHTML = this.title;
+        }
+
+        // Update category color
+        if (this.categoryIcon) {
+            this.categoryIcon.style.backgroundColor = this.category.color;
+        }
+
+        // Update content (to be implemented by child classes)
+        this.updatePinContent();
+    }
+
+    protected abstract updatePinContent(): void;
 }

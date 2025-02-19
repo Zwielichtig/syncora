@@ -37,9 +37,14 @@ export class HTMLSnippets {
     `
 
     public static APPOINTMENT_CONTENT = `
-        <div class="appointment p-3">
-            <i class="far fa-calendar-alt me-2"></i>
-            <span class="appointment-datetime"></span>
+        <div class="appointment">
+            <div class="appointment-content">
+                <div class="appointment-title mb-2"></div>
+                <div class="appointment-time">
+                    <div class="appointment-begin small text-muted"></div>
+                    <div class="appointment-end small text-muted"></div>
+                </div>
+            </div>
         </div>
     `
 
@@ -122,10 +127,18 @@ export class HTMLSnippets {
     `
 
     public static APPOINTMENT_EDITOR = `
-    <div class="row mb-2 appointment-editor">
-        <label class="col-sm-3 col-form-label">Termin</label>
-        <div class="col-sm-9">
-            <input type="datetime-local" class="form-control appointment-datetime-input">
+    <div class="appointment-editor">
+        <div class="mb-3">
+            <label class="form-label">Titel</label>
+            <input type="text" class="form-control appointment-title-input" placeholder="Termin Titel">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Beginn</label>
+            <input type="datetime-local" class="form-control appointment-begin-input">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ende</label>
+            <input type="datetime-local" class="form-control appointment-end-input">
         </div>
     </div>
     `

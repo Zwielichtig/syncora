@@ -11,12 +11,15 @@ use App\Entity\Image;
 use App\Entity\ToDoEntry;
 use App\Entity\User;
 use App\Entity\UserToCategory;
+use App\Repository\AppointmentRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 
@@ -26,13 +29,13 @@ class AjaxController extends BaseController
     protected EntityManagerInterface $entityManager;
 
     #[Route('/ajax', name: 'ajax', methods: ['POST'])]
-    public function handleAJAX(EntityManagerInterface $entityManager): Response
+    public function handleAJAX(Request $request, EntityManagerInterface $entityManager): Response
     {
         // return new Response(json_encode($_SESSION['user']));
         $response = new AJAXResponse();
         try {
             $this->entityManager = $entityManager;
-            $input = json_decode(file_get_contents('php://input'), true);
+            $input = json_decode($request->getContent(), true);
 
             $function = $input['function'];
 
@@ -71,7 +74,13 @@ class AjaxController extends BaseController
                     $response = AjaxController::getUserPins();
                     break;
                 case 'update-user-pins':
-                    $response = AjaxController::updateUserPins($input['data']);
+                    $response = AjaxController::updateUserPins($input);
+                    break;
+                case 'create-pin':
+                    $response = $this->createPin(
+                        $request,
+                        $this->entityManager
+                    );
                     break;
 
 
@@ -206,172 +215,115 @@ class AjaxController extends BaseController
             'user'=> $_SESSION['user']['id']
         ]);
 
-
         $data = [];
         foreach ($userToCategories as $userToCategory) {
             $category = $userToCategory->getCategory();
+            if (!$category) continue;
 
             $pins = $category->getPins();
             foreach ($pins as $pin) {
-                $pinData = [
-                    'id' => $pin->getId(),
-                    'title' => $pin->getTitle(),
-                    'category' =>$pin->getCategory()->getId(),
-                    'type' => $pin->getType()->getId(),
-                    'posX' => $pin->getPosX(),
-                    'posY' => $pin->getPosY(),
-                    'width' => $pin->getWidth(),
-                    'height' => $pin->getHeight()
-                ];
+                if (!$pin || !$pin->getType()) continue;
 
-                $pinContent = [];
-                switch ($pin->getType()->getId()) {
+                try {
+                    $pinData = [
+                        'id' => $pin->getId(),
+                        'title' => $pin->getTitle(),
+                        'category' => $category->getId(),
+                        'type' => $pin->getType()->getId(),
+                        'posX' => $pin->getPosX(),
+                        'posY' => $pin->getPosY(),
+                        'width' => $pin->getWidth(),
+                        'height' => $pin->getHeight(),
+                        'pinContent' => []
+                    ];
 
-                    case 1:
-                        //Notiz
-                        $note = $this->entityManager->getRepository(Note::class)->findOneBy([
-                            'pin'=> $pin->getId()
-                        ]);
+                    switch ($pin->getType()->getId()) {
+                        case 1: // Note
+                            $note = $this->entityManager->getRepository(Note::class)->findOneBy(['pin' => $pin]);
+                            if ($note) {
+                                $pinData['pinContent'] = [
+                                    'id' => $note->getId(),
+                                    'content' => $note->getContent()
+                                ];
+                            }
+                            break;
 
-                        $pinContent['id'] = $note->getId();
-                        $pinContent['content'] = $note->getContent();
-                        break;
+                        case 2: // ToDo
+                            $entries = $this->entityManager->getRepository(ToDoEntry::class)->findBy(['pin' => $pin]);
+                            $pinData['pinContent']['entries'] = [];
+                            foreach ($entries as $entry) {
+                                $pinData['pinContent']['entries'][] = [
+                                    'id' => $entry->getId(),
+                                    'content' => $entry->getContent(),
+                                    'checked' => $entry->isChecked(),
+                                    'datetime' => $entry->getDatetime() ? $entry->getDatetime()->format('c') : null
+                                ];
+                            }
+                            break;
 
-                    case 2:
-                        //Image
-                        $image = $this->entityManager->getRepository(Image::class)->findOneBy([
-                            'pin'=> $pin->getId()
-                        ]);
-                        $pinContent['id'] = $image->getId();
-                        $pinContent['filePath'] = $image->getFilePath();
-                        break;
-                    case 3:
-                        //ToDo
-                        $toDoEntries = $this->entityManager->getRepository(ToDoEntry::class)->findBy([
-                            'pin'=> $pin->getId()
-                        ]);
+                        case 3: // Appointment
+                            $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy(['pin' => $pin]);
+                            if ($appointment) {
+                                $pinData['pinContent'] = [
+                                    'id' => $appointment->getId(),
+                                    'title' => $appointment->getTitle(),
+                                    'begin_at' => $appointment->getBeginAt() ? $appointment->getBeginAt()->format('c') : null,
+                                    'end_at' => $appointment->getEndAt() ? $appointment->getEndAt()->format('c') : null
+                                ];
+                            }
+                            break;
 
-                        $entries = [];
-                        foreach ($toDoEntries as $entry) {
-                            $entries[] = [
-                                'id' => $entry->getId(),
-                                'row' => $entry->getRow(),
-                                'datetime' => $entry->getDatetime(),
-                                'content' => $entry->getContent(),
-                            ];
-                        }
+                        case 4: // Image
+                            $image = $this->entityManager->getRepository(Image::class)->findOneBy(['pin' => $pin]);
+                            if ($image) {
+                                $pinData['pinContent'] = [
+                                    'id' => $image->getId(),
+                                    'filePath' => $image->getFilePath()
+                                ];
+                            }
+                            break;
+                    }
 
-
-                        $pinContent['entries'] = $entries;
-                        break;
-                    case 4:
-                        //Appointment
-                        $appointment = $this->entityManager->getRepository(Appointment::class)->findOneBy([
-                            'pin'=> $pin->getId()
-                        ]);
-
-                        $pinContent['id'] = $appointment->getId();
-                        $pinContent['datetime'] = $appointment->getDatetime();
-                        break;
-
+                    $data[] = $pinData;
+                } catch (\Exception $e) {
+                    error_log('Error processing pin ' . $pin->getId() . ': ' . $e->getMessage());
+                    continue;
                 }
-                $pinData['pinContent'] = $pinContent;
-                $data[] = $pinData;
             }
-
         }
-        $response->setData($data);
+
         $response->setSuccesful();
+        $response->setData($data);
         return $response;
     }
 
-    function updateUserPins($input)
+    function updateUserPins($input): AJAXResponse
     {
         $response = new AJAXResponse();
+        $pins = $input['data'];  // Get pins from data key
 
-        foreach ($input as $pinData) {
-
-            if($pinData['id'] != null) {
-                $pin = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
-            } else {
-                $pin = new Pin();
+        foreach ($pins as $pinData) {
+            if (!isset($pinData['id'])) {
+                continue;
             }
-            $category = $this->entityManager->getRepository(Category::class)->find($pinData['category']);
-            $pin->setCategory($category);
-            $pin->setTitle($pinData['title']);
-            $pin->setPosX($pinData['posX']);
-            $pin->setPosY($pinData['posY']);
-            $pin->setWidth($pinData['width']);
-            $pin->setHeight($pinData['height']);
 
-            $pinContent = $pinData['pinContent'];
-            switch ($pinData['type']) {
-                case 1:
-                    //Notiz
-                    if($pinContent['id'] != null) {
-                        $note = $this->entityManager->getRepository(Note::class)->find($pinContent['id']);
-                    } else {
-                        $note = new Note();
-                    }
-                    $note->setContent($pinContent['content']);
-                    if($pinContent['id'] == null) {
-                        $this->entityManager->persist($note);
-                    }
-
-                    break;
-                case 2:
-                    //Image
-                    if($pinContent['id'] != null) {
-                        $image = $this->entityManager->getRepository(Image::class)->find($pinContent['id']);
-                    } else {
-                        $image = new Image();
-                    }
-                    $image->setFilePath($pinContent['filePath']);
-                    if($pinContent['id'] == null) {
-                        $this->entityManager->persist($image);
-                    }
-
-                    break;
-                case 3:
-                    //ToDo
-                    foreach($pinContent['entries'] as $entryContent) {
-                        if($entryContent['id'] != null) {
-                            $entry = $this->entityManager->getRepository(ToDoEntry::class)->find($entryContent['id']);
-                        } else {
-                            $entry = new ToDoEntry();
-                        }
-                        $entry->setRow($entryContent['row']);
-                        $entry->setContent($entryContent['content']);
-                        $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $entryContent['datetime']);
-                        $entry->setDatetime($datetime);
-                        $entry->setChecked($entryContent['checked']);
-                        if($entryContent['id'] == null) {
-                            $this->entityManager->persist($entry);
-                        }
-                    }
-
-                    break;
-                case 4:
-                    //Appointment
-                    if($pinContent['id'] != null) {
-                        $appointment = $this->entityManager->getRepository(Appointment::class)->find($pinContent['id']);
-                    } else {
-                        $appointment = new Appointment();
-                    }
-                    $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $pinContent['datetime']);
-                    $appointment->setDatetime($datetime);
-                    if($pinContent['id'] == null) {
-                        $this->entityManager->persist($appointment);
-                    }
-                    break;
-
+            $pinEntity = $this->entityManager->getRepository(Pin::class)->find($pinData['id']);
+            if (!$pinEntity) {
+                continue;
             }
-            $this->entityManager->flush();
+
+            // Update pin position and size
+            $pinEntity->setPosX($pinData['posX']);
+            $pinEntity->setPosY($pinData['posY']);
+            $pinEntity->setWidth($pinData['width']);
+            $pinEntity->setHeight($pinData['height']);
+
+            $this->entityManager->persist($pinEntity);
         }
+
+        $this->entityManager->flush();
         $response->setSuccesful();
-
         return $response;
-
     }
 
 
@@ -425,6 +377,105 @@ class AjaxController extends BaseController
         return $response;
     }
 
+    public function createPin(Request $request, EntityManagerInterface $entityManager)
+    {
+        $response = new AJAXResponse();
+        $requestData = json_decode($request->getContent(), true);
+        $data = $requestData['data']['pin'];
+
+        // Debug log
+        error_log('Received pin data: ' . print_r($data, true));
+
+        // Get common pin data
+        $type = $entityManager->getRepository(PinType::class)->find($data['type']['id']);
+        $category = $entityManager->getRepository(Category::class)->find($data['category']['id']);
+
+        // Create pin based on type
+        $pin = new Pin();
+        $pin->setType($type);
+        $pin->setCategory($category);
+        $pin->setTitle($data['title'] ?? '');
+        $pin->setPosX($data['posX'] ?? 0);
+        $pin->setPosY($data['posY'] ?? 0);
+        $pin->setWidth($data['width'] ?? 200);
+        $pin->setHeight($data['height'] ?? 200);
+
+        $this->entityManager->persist($pin);
+        $this->entityManager->flush();
+
+        // Create pin content based on type
+        switch ($type->getId()) {
+            case 1: // Note
+                $note = new Note();
+                $note->setPin($pin);
+                $note->setContent($data['content'] ?? '');
+                $this->entityManager->persist($note);
+                break;
+
+            case 2: // ToDo
+                if (isset($data['entries']) && is_array($data['entries'])) {
+                    foreach ($data['entries'] as $entry) {
+                        $todoEntry = new ToDoEntry();
+                        $todoEntry->setPin($pin);
+                        $todoEntry->setRow($entry['row'] ?? 0);
+                        $todoEntry->setContent($entry['content'] ?? '');
+                        $todoEntry->setChecked($entry['done'] ?? false);
+                        if (isset($entry['datetime'])) {
+                            $todoEntry->setDatetime(new \DateTime($entry['datetime']));
+                        }
+                        $this->entityManager->persist($todoEntry);
+                    }
+                }
+                break;
+
+            case 3: // Appointment
+                $appointment = new Appointment($pin, $_SESSION['user']['id']);
+                $appointment->setTitle($data['title'] ?? '');
+                if (isset($data['begin_at'])) {
+                    $appointment->setBeginAt(new \DateTime($data['begin_at']));
+                }
+                if (isset($data['end_at'])) {
+                    $appointment->setEndAt(new \DateTime($data['end_at']));
+                }
+                $this->entityManager->persist($appointment);
+                break;
+
+            case 4: // Image
+                if (isset($data['image'])) {
+                    $image = new Image();
+                    $image->setPin($pin);
+                    $imageData = $data['image'];
+                    $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+                    $imageData = base64_decode($imageData);
+                    $filename = $this->saveImage($imageData);
+                    $image->setFilePath($filename);
+                    $this->entityManager->persist($image);
+                }
+                break;
+        }
+
+        $this->entityManager->flush();
+        $response->setSuccesful();
+        return $response;
+    }
+
+    private function saveImage(string $base64Data): string
+    {
+        // Create directory if it doesn't exist
+        $uploadDir = 'public/fileadmin/user_uploads/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // Generate unique filename
+        $filename = uniqid() . '.png';
+        $filepath = $uploadDir . $filename;
+
+        // Save image file
+        file_put_contents($filepath, $base64Data);
+
+        return $filename;
+    }
 }
 
 class AJAXResponse {

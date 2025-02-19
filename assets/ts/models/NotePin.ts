@@ -10,8 +10,8 @@ export class NotePin extends Pin{
     public static instances: NotePin[] = []
 
     contentArea : HTMLParagraphElement
-    
-    
+
+
     public static getNotePinInstance(id: number): NotePin {
         for (const pin of this.instances) {
             if (pin.id == id) {
@@ -29,7 +29,7 @@ export class NotePin extends Pin{
         pin.saved = true;
         return pin
     }
-    
+
 
     constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId:number, content: string) {
         super(id, type, category, title, posX, posY, width, height)
@@ -79,6 +79,13 @@ export class NotePin extends Pin{
             content: this.content
         }
         return data
+    }
+
+    protected updatePinContent(): void {
+        const noteContent = this.pinContainer.querySelector('.note-content');
+        if (noteContent) {
+            noteContent.textContent = this.content;
+        }
     }
 
 }

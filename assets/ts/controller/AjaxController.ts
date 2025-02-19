@@ -64,6 +64,23 @@ export class AjaxController {
 		}
 	}
 
+	static async createPin(pin: Pin) {
+		try {
+			var body = {
+				function:'create-pin',
+				data: {
+					pin: pin,
+				}
+			};
+
+			const response = await this.fetchData(body)
+			//TODO Response Handling
+		} catch (error) {
+			//TODO Error Handling
+		}
+	}
+
+
 	static async getPinTypes() : Promise<Array<any>> {
 		try {
 			var body = {

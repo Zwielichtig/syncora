@@ -2,7 +2,7 @@
 
 {% block title %}Board{% endblock %}
 
-{% block pageType %}{% if user is null %}login{% else %}navigation{% endif %}{% endblock %}
+{% block pageType %}{% if user is null %}login{% else %}board{% endif %}{% endblock %}
 
 {% block body %}
     {% if user is null %}
@@ -11,6 +11,9 @@
         {% include './partials/userMessage.html.twig' %}
     {% else %}
         {% include 'partials/navigation.html.twig' %}
+        <div class="board-container">
+            <!-- board content -->
+        </div>
     {% endif %}
 {% endblock %}
 

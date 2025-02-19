@@ -27,8 +27,8 @@ class ToDoEntry
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $datetime = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $checked = null;
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $checked = false;
 
     public function getId(): ?int
     {
@@ -83,12 +83,12 @@ class ToDoEntry
         return $this;
     }
 
-    public function isChecked(): ?bool
+    public function isChecked(): bool
     {
         return $this->checked;
     }
 
-    public function setChecked(?bool $checked): static
+    public function setChecked(bool $checked): static
     {
         $this->checked = $checked;
 

@@ -13,6 +13,7 @@ export class ToDoPin extends Pin {
     public static instances: ToDoPin[] = []
 
     pinContainer: HTMLDivElement;
+    todoContainer: HTMLDivElement;
 
 
     public static getToDoPinInstance(id: number): ToDoPin {
@@ -31,67 +32,98 @@ export class ToDoPin extends Pin {
         for (const entry of data['pinContent']['entries']) {
             entries.push(ToDoEntry.initToDoEntryInstance(entry))
         }
-        const pin = new ToDoPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, entries)
+        const pin = new ToDoPin(data.id, type, category, data.title, data.posX, data.posY, data.width, data.height, data.contentId, entries)
         pin.saved = true;
         this.instances.push(pin)
         return pin
     }
 
 
-    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, entries: ToDoEntry[]) {
+    constructor(id: number, type: PinType, category: Category, title: string, posX: number, posY: number, width: number, height: number, contentId: number, entries: any[]) {
         super(id, type, category, title, posX, posY, width, height)
-        this.contentId = id
-        this.entries = entries
+        this.contentId = contentId
+        this.entries = entries.map(entry => new ToDoEntry(
+            0, // id will be set by backend
+            entry.content,
+            entry.done,
+            entry.datetime ? new Date(entry.datetime) : null
+        ));
     }
 
     buildPinContent(): HTMLDivElement {
         const parser = new DOMParser();
         const html = parser.parseFromString(HTMLSnippets.TO_DO_CONTENT, 'text/html');
-        const pinContent = html.querySelector('.to-do') as HTMLDivElement;
+        this.todoContainer = html.querySelector('.to-do') as HTMLDivElement;
 
-        // Add entries to the todo container
-        for (const entry of this.entries) {
-            pinContent.appendChild(entry.buildEntry());
-        }
+        // Create and append entries
+        this.entries.forEach(entry => {
+            const entryElement = document.createElement('div');
+            entryElement.className = 'to-do-entry d-flex align-items-center mb-2';
+            entryElement.innerHTML = `
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" ${entry.done ? 'checked' : ''}>
+                    <label class="form-check-label ms-2 ${entry.done ? 'text-decoration-line-through text-muted' : ''}">${entry.content}</label>
+                </div>
+                ${entry.datetime ? `<small class="text-muted ms-auto">${entry.datetime.toLocaleString()}</small>` : ''}
+            `;
 
-        return pinContent;
+            // Add checkbox event listener
+            const checkbox = entryElement.querySelector('input[type="checkbox"]') as HTMLInputElement;
+            const label = entryElement.querySelector('.form-check-label') as HTMLLabelElement;
+
+            if (checkbox && label) {
+                checkbox.addEventListener('change', (e) => {
+                    entry.done = checkbox.checked;
+                    // Update label styling
+                    if (entry.done) {
+                        label.classList.add('text-decoration-line-through', 'text-muted');
+                    } else {
+                        label.classList.remove('text-decoration-line-through', 'text-muted');
+                    }
+                    this.setSaved(false);
+                });
+            }
+
+            this.todoContainer.appendChild(entryElement);
+        });
+
+        return this.todoContainer;
     }
 
     buildEditorContent(): HTMLDivElement {
-        const parser = new DOMParser()
-        const htmlEntry = parser.parseFromString(HTMLSnippets.TO_DO_EDITOR, 'text/html')
+        const parser = new DOMParser();
+        const html = parser.parseFromString(HTMLSnippets.TO_DO_EDITOR, 'text/html');
+        const todoEditor = html.querySelector('.to-do-editor') as HTMLDivElement;
+        const entriesContainer = todoEditor.querySelector('.to-do-editor-entries');
 
-        const editorContent = htmlEntry.querySelector('.to-do-editor') as HTMLDivElement
+        // Add existing entries to editor
+        if (entriesContainer) {
+            this.entries.forEach(entry => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'to-do-entry-editor';
+                entryElement.innerHTML = `
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <input type="checkbox" class="form-check-input to-do-entry-checkbox" ${entry.done ? 'checked' : ''}>
+                        <input type="text" class="form-control to-do-entry-content-input" value="${entry.content}">
+                        <input type="datetime-local" class="form-control to-do-entry-datetime-input" value="${entry.datetime?.toISOString().slice(0, 16) || ''}">
+                        <button type="button" class="btn to-do-entry-delete-btn">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
 
-        const editorEntries = editorContent.querySelector('.to-do-editor-entries') as HTMLDivElement
+                // Add delete functionality
+                const deleteBtn = entryElement.querySelector('.to-do-entry-delete-btn');
+                deleteBtn?.addEventListener('click', () => {
+                    entryElement.remove();
+                    this.setSaved(false);
+                });
 
-        for (const entry of this.entries) {
-            const entryContainer = entry.buildEntryEditor()
-
-            //delete
-            const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
-            deleteButton.addEventListener('click', () => {
-                this.deleteEntry(entry.row)
-            })
-
-            editorEntries.appendChild(entryContainer)
+                entriesContainer.appendChild(entryElement);
+            });
         }
 
-        //add
-        const addButton = editorContent.querySelector('.to-do-entry-add-btn') as HTMLButtonElement
-        addButton.addEventListener('click', () => {
-            const newEntry = this.addEntry()
-            const entryContainer = newEntry.buildEntryEditor()
-
-            //delete
-            const deleteButton = entryContainer.querySelector('.to-do-entry-delete-btn') as HTMLButtonElement
-            deleteButton.addEventListener('click', () => {
-                this.deleteEntry(newEntry.row)
-            })
-            editorEntries.appendChild(entryContainer)
-        })
-
-        return editorContent;
+        return todoEditor;
     }
 
     savePin(): void {
@@ -139,4 +171,63 @@ export class ToDoPin extends Pin {
         return data
     }
 
+    protected updatePinContent(): void {
+        if (this.todoContainer) {
+            this.todoContainer.innerHTML = ''; // Clear existing entries
+            this.entries.forEach(entry => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'to-do-entry d-flex align-items-center mb-2';
+                entryElement.innerHTML = `
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" ${entry.done ? 'checked' : ''}>
+                        <label class="form-check-label ms-2 ${entry.done ? 'text-decoration-line-through text-muted' : ''}">${entry.content}</label>
+                    </div>
+                    ${entry.datetime ? `<small class="text-muted ms-auto">${entry.datetime.toLocaleString()}</small>` : ''}
+                `;
+
+                // Add checkbox event listener
+                const checkbox = entryElement.querySelector('input[type="checkbox"]') as HTMLInputElement;
+                const label = entryElement.querySelector('.form-check-label') as HTMLLabelElement;
+
+                if (checkbox && label) {
+                    checkbox.addEventListener('change', (e) => {
+                        entry.done = checkbox.checked;
+                        // Update label styling
+                        if (entry.done) {
+                            label.classList.add('text-decoration-line-through', 'text-muted');
+                        } else {
+                            label.classList.remove('text-decoration-line-through', 'text-muted');
+                        }
+                        this.setSaved(false);
+                    });
+                }
+
+                this.todoContainer.appendChild(entryElement);
+            });
+        }
+    }
+
+}
+
+class ToDoEntry {
+    id: number;
+    content: string;
+    done: boolean;
+    datetime: Date | null;
+
+    constructor(id: number, content: string, done: boolean, datetime: Date | null) {
+        this.id = id;
+        this.content = content;
+        this.done = done;
+        this.datetime = datetime;
+    }
+
+    static initToDoEntryInstance(data: any): ToDoEntry {
+        return new ToDoEntry(
+            data.id,
+            data.content,
+            data.done,
+            data.datetime ? new Date(data.datetime) : null
+        );
+    }
 }
