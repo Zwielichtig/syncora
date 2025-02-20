@@ -25,6 +25,12 @@ Start Syncora
 ```bash
 ddev start
 ```
+If any problems with the docker-provider arise, use:
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+```
 <br>
 
 Install Composer packages and dependencies
